@@ -1,0 +1,24 @@
+{
+  "uuid": "${uuid}",
+  "type": "${orgType}",
+  "shortName": "${shortName}",
+  "legalName": "${legalName}",
+  "properName": "${name}",
+  "tradeNames": [
+    "Trade Name '${name}'"
+  ],
+  "hiddenLabel": "${hiddenLabel}",
+  "industryClassification": "${industryClassification}",
+  "formerNames": [
+    "${shortName} - ${legalName}"
+  ],
+  "localNames": [
+    "Local ${name}"
+  ],
+  "identifiers": [
+    {
+      "authority": "http://api.ft.com/system/FACTSET-LOAD-TEST",
+      "identifierValue": "${id}"
+    }
+  ]
+}
