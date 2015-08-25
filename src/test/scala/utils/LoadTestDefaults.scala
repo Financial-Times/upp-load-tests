@@ -1,6 +1,6 @@
-package organisation
+package utils
 
-object Defaults {
+object LoadTestDefaults {
 
   val DefaultSoakDurationInMinutes = 20
   val DefaultRampUpDurationInMinutes = 10

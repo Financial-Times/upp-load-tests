@@ -5,7 +5,7 @@ import java.util.UUID
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import organisation.Defaults._
+import utils.LoadTestDefaults._
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
