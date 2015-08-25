@@ -67,17 +67,37 @@ case class OrganisationTemplate(id: String,
     }
 }
 
+object TransformerSimulation {
+
+  val Feeder = csv("organisations.uuid").random
+
+  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
+
+  val HttpConf = http
+    .baseURLs("http://ftaps39403-law1a-eu-t:8080", "http://ftaps39395-law1b-eu-t:8080")
+    .userAgentHeader("Organisation/Load-test")
+
+  val Scenario = scenario("Organisation Transformer").during(Duration minutes) {
+    feed(Feeder)
+      .exec(
+        http("Transformer request")
+          .get("/transformers/organisations/${uuid}")
+          .check(status is 200))
+      .pause(100 microseconds, 1 second)
+  }
+}
+
 object WriteSimulation {
 
   val Feeder = Iterator.continually(OrgUtils.getOrgMap)
 
-  val Duration = Integer.getInteger("soak-duration", DefaultSoakDurationInMinutes)
+  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
     .baseURLs("http://localhost:9100", "http://localhost:9100")
     .userAgentHeader("Organisation/Load-test")
 
-  val Scenario = scenario("Write Organisation").during(10 minutes) {
+  val Scenario = scenario("Organisation Write").during(Duration minutes) {
     feed(Feeder)
       .exec(
         http("Write request")
@@ -91,14 +111,14 @@ object WriteSimulation {
 object ReadSimulation {
   val Feeder = csv("organisations.uuid").random
 
-  val Duration = Integer.getInteger("soak-duration", DefaultSoakDurationInMinutes)
+  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
     //        .baseURLs("http://localhost:9022", "http://localhost:9022")
     .baseURLs("http://ftaps30276-law1a-eu-t", "http://ftaps30271-law1a-eu-t")
     .userAgentHeader("Organisation/Load-test")
 
-  val Scenario = scenario("Read Organisation").during(10 minutes) {
+  val Scenario = scenario("Organisation Read").during(Duration minutes) {
     feed(Feeder)
       .exec(
         http("Read request")
@@ -108,7 +128,18 @@ object ReadSimulation {
   }
 }
 
-class OrgWriteSimulation extends Simulation {
+class TransformerSimulation extends Simulation {
+
+  val numUsers = Integer.getInteger("users", DefaultNumUsers)
+  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
+
+  setUp(
+    TransformerSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+  ).protocols(TransformerSimulation.HttpConf)
+
+}
+
+class WriteSimulation extends Simulation {
 
   val numUsers = Integer.getInteger("users", DefaultNumUsers / 10)
   val rampUp = Integer.getInteger("ramp-up-minutes", 1)
@@ -119,7 +150,7 @@ class OrgWriteSimulation extends Simulation {
 
 }
 
-class OrgReadSimulation extends Simulation {
+class ReadSimulation extends Simulation {
 
   val numUsers = Integer.getInteger("users", DefaultNumUsers)
   val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
@@ -130,15 +161,16 @@ class OrgReadSimulation extends Simulation {
 
 }
 
-class OrgReadAndWriteSimulation extends Simulation {
+class FullSimulation extends Simulation {
 
   val numReadUsers = Integer.getInteger("users", DefaultNumUsers)
   val numWriteUsers = Integer.getInteger("write-users", numReadUsers.toInt / 10)
   val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
 
   setUp(
-    ReadSimulation.Scenario.inject(rampUsers(numReadUsers) over (rampUp minutes)).protocols(ReadSimulation.HttpConf),
-    WriteSimulation.Scenario.inject(rampUsers(numWriteUsers) over (rampUp minutes)).protocols(WriteSimulation.HttpConf)
+    TransformerSimulation.Scenario.inject(rampUsers(numWriteUsers) over (rampUp minutes)).protocols(TransformerSimulation.HttpConf),
+    WriteSimulation.Scenario.inject(rampUsers(numWriteUsers) over (rampUp minutes)).protocols(WriteSimulation.HttpConf),
+    ReadSimulation.Scenario.inject(rampUsers(numReadUsers) over (rampUp minutes)).protocols(ReadSimulation.HttpConf)
   )
 
 }
