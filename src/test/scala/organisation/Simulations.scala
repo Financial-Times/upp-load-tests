@@ -94,7 +94,7 @@ object WriteSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    .baseURLs("http://localhost:9100", "http://localhost:9100")
+    .baseURLs("http://ftaps37932-law1a-eu-t", "http://ftaps37933-law1a-eu-t")
     .userAgentHeader("Organisation/Load-test")
 
   val Scenario = scenario("Organisation Write").during(Duration minutes) {
