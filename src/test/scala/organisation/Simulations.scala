@@ -5,6 +5,8 @@ import java.util.UUID
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
+import organisation.Defaults._
+
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Random
@@ -16,7 +18,7 @@ object OrganisationType extends Enumeration {
 object OrgUtils {
 
   implicit class RandomList[A](val self: List[A]) extends AnyVal {
-    def getRandom(): A = self(Random.nextInt(self.size))
+    def getRandom: A = self(Random.nextInt(self.size))
   }
 
   val RemoveLetters = List(' ', 'a', 'e', 'i', 'o', 'u')
@@ -35,7 +37,7 @@ object OrgUtils {
 
   def getOrgMap = {
     val id = "ORG-" + f"${Random.nextInt(System.getProperty("org.write.max-id").toInt)}%04d"
-    val name = ValidOrgNames.getRandom()
+    val name = ValidOrgNames.getRandom
     val nameSplit = name.split(' ')
     Map(
       "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET-LOAD-TEST/" + id).getBytes(Charset.defaultCharset())),
@@ -67,30 +69,37 @@ case class OrganisationTemplate(id: String,
 
 object WriteSimulation {
 
-  val feeder = Iterator.continually(OrgUtils.getOrgMap)
+  val Feeder = Iterator.continually(OrgUtils.getOrgMap)
 
-  val httpConf = http
+  val Duration = Integer.getInteger("soak-duration", DefaultSoakDurationInMinutes)
+
+  val HttpConf = http
     .baseURLs("http://localhost:9100", "http://localhost:9100")
     .userAgentHeader("Organisation/Load-test")
 
-  val write = scenario("Write Organisation")
-    .feed(feeder)
-    .exec(
-      http("Write request")
-        .put("/organisation/${uuid}")
-        .body(ELFileBody("organisation_template.json"))
-        .asJSON)
+  val Scenario = scenario("Write Organisation").during(10 minutes) {
+    feed(Feeder)
+      .exec(
+        http("Write request")
+          .put("/organisation/${uuid}")
+          .body(ELFileBody("organisation_template.json"))
+          .asJSON)
+      .pause(100 microseconds, 1 second)
+  }
 }
 
 object ReadSimulation {
-  val feeder = csv("organisations.uuid").random
+  val Feeder = csv("organisations.uuid").random
 
-  val httpConf = http
-    //    .baseURLs("http://localhost:9022", "http://localhost:9022")
+  val Duration = Integer.getInteger("soak-duration", DefaultSoakDurationInMinutes)
+
+  val HttpConf = http
+    //        .baseURLs("http://localhost:9022", "http://localhost:9022")
     .baseURLs("http://ftaps30276-law1a-eu-t", "http://ftaps30271-law1a-eu-t")
     .userAgentHeader("Organisation/Load-test")
-  val read = scenario("Read Organisation").repeat(2500) {
-    feed(feeder)
+
+  val Scenario = scenario("Read Organisation").during(10 minutes) {
+    feed(Feeder)
       .exec(
         http("Read request")
           .get("/organisations/${uuid}")
@@ -101,7 +110,35 @@ object ReadSimulation {
 
 class OrgWriteSimulation extends Simulation {
 
-  setUp(ReadSimulation.read.inject(rampUsers(60) over (10 minutes))).protocols(ReadSimulation.httpConf)
+  val numUsers = Integer.getInteger("users", DefaultNumUsers / 10)
+  val rampUp = Integer.getInteger("ramp-up-minutes", 1)
 
- // 3125 / 1.25 = 30 minutes 
+  setUp(
+    WriteSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+  ).protocols(WriteSimulation.HttpConf)
+
+}
+
+class OrgReadSimulation extends Simulation {
+
+  val numUsers = Integer.getInteger("users", DefaultNumUsers)
+  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
+
+  setUp(
+    ReadSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+  ).protocols(ReadSimulation.HttpConf)
+
+}
+
+class OrgReadAndWriteSimulation extends Simulation {
+
+  val numReadUsers = Integer.getInteger("users", DefaultNumUsers)
+  val numWriteUsers = Integer.getInteger("write-users", numReadUsers.toInt / 10)
+  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
+
+  setUp(
+    ReadSimulation.Scenario.inject(rampUsers(numReadUsers) over (rampUp minutes)).protocols(ReadSimulation.HttpConf),
+    WriteSimulation.Scenario.inject(rampUsers(numWriteUsers) over (rampUp minutes)).protocols(WriteSimulation.HttpConf)
+  )
+
 }
