@@ -44,7 +44,6 @@ object TransformerSimulation {
         http("Transformer request")
           .get("/transformers/people/${uuid}")
           .check(status is 200))
-      .pause(100 microseconds, 1 second)
   }
 }
 
@@ -74,7 +73,6 @@ object ReadSimulation {
         http("Read request")
           .get("/people/${uuid}")
           .check(status is 200, jsonPath("$.id").is("http://api.ft.com/things/${uuid}")))
-      .pause(100 microseconds, 1 second)
   }
 }
 

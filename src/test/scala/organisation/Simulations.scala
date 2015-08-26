@@ -83,7 +83,6 @@ object TransformerSimulation {
         http("Transformer request")
           .get("/transformers/organisations/${uuid}")
           .check(status is 200))
-      .pause(100 microseconds, 1 second)
   }
 }
 
@@ -114,7 +113,6 @@ object ReadSimulation {
         http("Read request")
           .get("/organisations/${uuid}")
           .check(status is 200, jsonPath("$.id").is("http://api.ft.com/things/${uuid}")))
-      .pause(100 microseconds, 1 second)
   }
 }
 
@@ -146,7 +144,6 @@ object WriteSimulation {
           .put("/organisation/${uuid}")
           .body(ELFileBody("organisation/organisation_template.json"))
           .asJSON)
-      .pause(100 microseconds, 1 second)
   }
 }
 
