@@ -40,8 +40,8 @@ object OrgUtils {
     val name = ValidOrgNames.getRandom
     val nameSplit = name.split(' ')
     Map(
-      "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET-LOAD-TEST/" + id).getBytes(Charset.defaultCharset())),
-      "orgType" -> OrganisationType.Organisation,
+      "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET-LOAD-TEST/" + id).getBytes(Charset.defaultCharset())).toString,
+      "orgType" -> OrganisationType.Organisation.toString,
       "id" -> id,
       "name" -> name,
       "shortName" -> nameSplit(0),
@@ -87,25 +87,15 @@ object TransformerSimulation {
   }
 }
 
-object WriteSimulation {
+class TransformerSimulation extends Simulation {
 
-  val Feeder = Iterator.continually(OrgUtils.getOrgMap)
+  val numUsers = Integer.getInteger("users", DefaultNumUsers)
+  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
 
-  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
+  setUp(
+    TransformerSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+  ).protocols(TransformerSimulation.HttpConf)
 
-  val HttpConf = http
-    .baseURLs("http://ftaps37932-law1a-eu-t", "http://ftaps37933-law1a-eu-t")
-    .userAgentHeader("Organisation/Load-test")
-
-  val Scenario = scenario("Organisation Write").during(Duration minutes) {
-    feed(Feeder)
-      .exec(
-        http("Write request")
-          .put("/organisation/${uuid}")
-          .body(ELFileBody("organisation/organisation_template.json"))
-          .asJSON)
-      .pause(100 microseconds, 1 second)
-  }
 }
 
 object ReadSimulation {
@@ -128,15 +118,36 @@ object ReadSimulation {
   }
 }
 
-class TransformerSimulation extends Simulation {
+class ReadSimulation extends Simulation {
 
   val numUsers = Integer.getInteger("users", DefaultNumUsers)
   val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
 
   setUp(
-    TransformerSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
-  ).protocols(TransformerSimulation.HttpConf)
+    ReadSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+  ).protocols(ReadSimulation.HttpConf)
 
+}
+
+object WriteSimulation {
+
+  val Feeder = Iterator.continually(OrgUtils.getOrgMap)
+
+  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
+
+  val HttpConf = http
+    .baseURLs("http://ftaps37932-law1a-eu-t", "http://ftaps37933-law1a-eu-t")
+    .userAgentHeader("Organisation/Load-test")
+
+  val Scenario = scenario("Organisation Write").during(Duration minutes) {
+    feed(Feeder)
+      .exec(
+        http("Write request")
+          .put("/organisation/${uuid}")
+          .body(ELFileBody("organisation/organisation_template.json"))
+          .asJSON)
+      .pause(100 microseconds, 1 second)
+  }
 }
 
 class WriteSimulation extends Simulation {
@@ -147,17 +158,6 @@ class WriteSimulation extends Simulation {
   setUp(
     WriteSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
   ).protocols(WriteSimulation.HttpConf)
-
-}
-
-class ReadSimulation extends Simulation {
-
-  val numUsers = Integer.getInteger("users", DefaultNumUsers)
-  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
-
-  setUp(
-    ReadSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
-  ).protocols(ReadSimulation.HttpConf)
 
 }
 
