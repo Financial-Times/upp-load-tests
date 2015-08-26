@@ -69,7 +69,7 @@ case class OrganisationTemplate(id: String,
 
 object TransformerSimulation {
 
-  val Feeder = csv("organisations.uuid").random
+  val Feeder = csv("organisation/organisations.uuid").random
 
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
@@ -102,14 +102,14 @@ object WriteSimulation {
       .exec(
         http("Write request")
           .put("/organisation/${uuid}")
-          .body(ELFileBody("organisation_template.json"))
+          .body(ELFileBody("organisation/organisation_template.json"))
           .asJSON)
       .pause(100 microseconds, 1 second)
   }
 }
 
 object ReadSimulation {
-  val Feeder = csv("organisations.uuid").random
+  val Feeder = csv("organisation/organisations.uuid").random
 
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
