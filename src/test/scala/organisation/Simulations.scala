@@ -36,7 +36,7 @@ object OrgUtils {
     "Circle & Cloth")
 
   def getOrgMap = {
-    val id = "ORG-" + f"${Random.nextInt(System.getProperty("org.write.max-id").toInt)}%04d"
+    val id = "ORG-" + f"${Random.nextInt(Integer.getInteger("org.write.max-id", 1000))}%04d"
     val name = ValidOrgNames.getRandom
     val nameSplit = name.split(' ')
     Map(

@@ -1,6 +1,9 @@
 package people
 
 
+import java.nio.charset.Charset
+import java.util.UUID
+
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import utils.LoadTestDefaults._
@@ -15,17 +18,14 @@ object PeopleUtils {
     def getRandom: A = self(Random.nextInt(self.size))
   }
 
-  val ValidOrgNames = List(
-    "Bucket & Code",
-    "Cobalt & Vein",
-    "Burlap & Twine",
-    "Circle & Wish",
-    "Smoke & Spindle",
-    "Cable & Home",
-    "Parsley & Wren",
-    "Otter & Stove",
-    "City & Music",
-    "Circle & Cloth")
+  def getPeopleMap(name: String): Map[String, String] = {
+    val id = "PPL-" + f"${Random.nextInt(Integer.getInteger("org.write.max-id", 1000))}%04d"
+    Map(
+      "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET-LOAD-TEST-PPL/" + id).getBytes(Charset.defaultCharset())).toString,
+      "name" -> name,
+      "id" -> id
+    )
+  }
 }
 
 object TransformerSimulation {
@@ -87,5 +87,55 @@ class ReadSimulation extends Simulation {
   setUp(
     ReadSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
   ).protocols(ReadSimulation.HttpConf)
+
+}
+
+
+object WriteSimulation {
+
+  val Feeder = csv("people/fake_names.csv").random
+
+  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
+
+  val HttpConf = http
+    .baseURLs("http://ftaps35659-law1a-eu-t", "http://ftaps35660-law1a-eu-t")
+    .userAgentHeader("People/Load-test")
+
+  val Scenario = scenario("People Write").during(Duration minutes) {
+    feed(Feeder)
+      .uniformRandomSwitch(
+        exec { session => session.setAll(PeopleUtils.getPeopleMap(session("actor").as[String])) },
+        exec { session => session.setAll(PeopleUtils.getPeopleMap(session("character").as[String])) }
+      )
+      .exec(
+        http("Write request")
+          .put("/people/${uuid}")
+          .body(ELFileBody("people/people_template.json"))
+          .asJSON)
+  }
+}
+
+class WriteSimulation extends Simulation {
+
+  val numUsers = Integer.getInteger("users", DefaultNumUsers / 10)
+  val rampUp = Integer.getInteger("ramp-up-minutes", 1)
+
+  setUp(
+    WriteSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+  ).protocols(WriteSimulation.HttpConf)
+
+}
+
+class FullSimulation extends Simulation {
+
+  val numReadUsers = Integer.getInteger("users", DefaultNumUsers)
+  val numWriteUsers = Integer.getInteger("write-users", numReadUsers.toInt / 10)
+  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
+
+  setUp(
+    TransformerSimulation.Scenario.inject(rampUsers(numWriteUsers) over (rampUp minutes)).protocols(TransformerSimulation.HttpConf),
+    WriteSimulation.Scenario.inject(rampUsers(numWriteUsers) over (rampUp minutes)).protocols(WriteSimulation.HttpConf),
+    ReadSimulation.Scenario.inject(rampUsers(numReadUsers) over (rampUp minutes)).protocols(ReadSimulation.HttpConf)
+  )
 
 }

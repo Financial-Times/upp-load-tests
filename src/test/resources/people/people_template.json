@@ -1,0 +1,10 @@
+{
+  "uuid": "${uuid}",
+  "name": "${name}",
+  "identifiers": [
+    {
+      "authority": "http://api.ft.com/system/FACTSET-LOAD-TEST-PPL",
+      "identifierValue": "${id}"
+    }
+  ]
+}
