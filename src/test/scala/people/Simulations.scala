@@ -14,6 +14,7 @@ object PeopleUtils {
   implicit class RandomList[A](val self: List[A]) extends AnyVal {
     def getRandom: A = self(Random.nextInt(self.size))
   }
+
   val ValidOrgNames = List(
     "Bucket & Code",
     "Cobalt & Vein",
@@ -29,7 +30,7 @@ object PeopleUtils {
 
 object TransformerSimulation {
 
-  val Feeder = csv("people.uuid").random
+  val Feeder = csv("people/people.uuid").random
 
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
@@ -55,5 +56,36 @@ class TransformerSimulation extends Simulation {
   setUp(
     TransformerSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
   ).protocols(TransformerSimulation.HttpConf)
+
+}
+
+object ReadSimulation {
+  val Feeder = csv("people/people.uuid").random
+
+  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
+
+  val HttpConf = http
+    .baseURLs("http://ftaps30270-law1a-eu-t", "http://ftaps30275-law1a-eu-t")
+    .userAgentHeader("People/Load-test")
+
+  val Scenario = scenario("People Read").during(Duration minutes) {
+    feed(Feeder)
+      .exec(
+        http("Read request")
+          .get("/people/${uuid}")
+          .check(status is 200, jsonPath("$.id").is("http://api.ft.com/things/${uuid}")))
+      .pause(100 microseconds, 1 second)
+  }
+}
+
+
+class ReadSimulation extends Simulation {
+
+  val numUsers = Integer.getInteger("users", DefaultNumUsers)
+  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
+
+  setUp(
+    ReadSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+  ).protocols(ReadSimulation.HttpConf)
 
 }
