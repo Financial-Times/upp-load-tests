@@ -35,4 +35,16 @@ So in the above case, the load test being run is the class "organisation.Transfo
 
 Most of the load test scenarios follow the above pattern. There are times though that the scenario can take in extra parameters. When running the large full scale load tests (the ones that hit multiple microservices) you'll be able to configure the users for each scenario. For those it is best to look at the scenarios to see what can be configured.
 
+The available simulations are:
 
+1. FullLoadSimulation
+2. organisation.FullSimulation
+3. organisation.ReadSimulation
+4. organisation.TransformerSimulation
+5. organisation.WriteSimulation
+6. people.FullSimulation
+7. people.ReadSimulation
+8. people.TransformerSimulation
+9. people.WriteSimulation
+
+If you want to run the tests from your IDE, then all you need to do is run the class Engine. This will create a prompt menu giving you the option to select a gatling test to run. Doing it this way will mean you run with all the default values (unless you run it with the JVM arguments to override them).

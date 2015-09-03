@@ -7,7 +7,6 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import utils.LoadTestDefaults._
 
-import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Random
 
@@ -104,7 +103,7 @@ object ReadSimulation {
 
   val HttpConf = http
     //        .baseURLs("http://localhost:9022", "http://localhost:9022")
-    .baseURLs("http://ftaps30276-law1a-eu-t", "http://ftaps30271-law1a-eu-t")
+    .baseURLs("http://ft-sandbox.mshome.net:9022", "http://ft-sandbox.mshome.net:9022")
     .userAgentHeader("Organisation/Load-test")
 
   val Scenario = scenario("Organisation Read").during(Duration minutes) {

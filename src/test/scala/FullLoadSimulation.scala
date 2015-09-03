@@ -1,8 +1,9 @@
 import io.gatling.core.Predef._
 import io.gatling.core.scenario.Simulation
-import organisation.{ReadSimulation => OrgReadSimulation, WriteSimulation => OrgWriteSimulation, TransformerSimulation => OrgTransformerSimulation}
-import people.{ReadSimulation => PplReadSimulation, WriteSimulation => PplWriteSimulation, TransformerSimulation => PplTransformerSimulation}
+import organisation.{ReadSimulation => OrgReadSimulation, TransformerSimulation => OrgTransformerSimulation, WriteSimulation => OrgWriteSimulation}
+import people.{ReadSimulation => PplReadSimulation, TransformerSimulation => PplTransformerSimulation, WriteSimulation => PplWriteSimulation}
 import utils.LoadTestDefaults._
+
 import scala.language.postfixOps
 
 class FullLoadSimulation extends Simulation {
