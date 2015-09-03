@@ -102,8 +102,8 @@ object ReadSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    //        .baseURLs("http://localhost:9022", "http://localhost:9022")
-    .baseURLs("http://ft-sandbox.mshome.net:9022", "http://ft-sandbox.mshome.net:9022")
+//    .baseURLs("http://ft-sandbox.mshome.net:9022", "http://ft-sandbox.mshome.net:9022")
+    .baseURLs("http://ftaps30276-law1a-eu-t", "http://ftaps30271-law1a-eu-t")
     .userAgentHeader("Organisation/Load-test")
 
   val Scenario = scenario("Organisation Read").during(Duration minutes) {
