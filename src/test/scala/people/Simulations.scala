@@ -58,6 +58,7 @@ class TransformerSimulation extends Simulation {
 }
 
 object ReadSimulation {
+
   val Feeder = csv("people/people.uuid").random
 
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
