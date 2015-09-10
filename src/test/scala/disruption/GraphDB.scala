@@ -18,7 +18,7 @@ import scala.language.postfixOps
 object GraphDB {
 
   case class Worker(host: String, client: Saboteur) {
-    def this(host: String) = this(host, Saboteur.defineClient("worker-" + host, 9022, host))
+    def this(host: String) = this(host, Saboteur.defineClient("worker-" + host, 8080, host))
   }
 
   implicit class GraphDBSaboteur(val self: Worker) extends AnyVal {
