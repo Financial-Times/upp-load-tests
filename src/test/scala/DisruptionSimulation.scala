@@ -36,7 +36,7 @@ class DisruptionSimulation extends Simulation {
       create network failure lasting a few seconds
      */
     GraphDB.WorkerThree.createNetworkFailureIn(65 minutes, 10 seconds)
-    GraphDB.WorkerThree.createNetworkFailureIn(70 minutes, 10 seconds)
+    GraphDB.WorkerThree.createNetworkFailureIn(70 minutes, 5 seconds)
     GraphDB.WorkerThree.createNetworkFailureIn(80 minutes, 10 seconds)
 
     /*
@@ -55,9 +55,9 @@ class DisruptionSimulation extends Simulation {
 
   setUp(
     OrgWriteSimulation.Scenario.inject(constantUsersPerSec(6) during (150 minutes)).protocols(OrgWriteSimulation.HttpConf)
-      .throttle(reachRps(3) in (5 minutes), holdFor(145 minutes)),
+      .throttle(reachRps(2) in (4 minutes), holdFor(145 minutes)),
     PplWriteSimulation.Scenario.inject(constantUsersPerSec(6) during (150 minutes)).protocols(PplWriteSimulation.HttpConf)
-      .throttle(reachRps(3) in (5 minutes), holdFor(145 minutes)),
+      .throttle(reachRps(2) in (4 minutes), holdFor(145 minutes)),
     OrgReadSimulation.Scenario.inject(constantUsersPerSec(30) during (150 minutes)).protocols(OrgReadSimulation.HttpConf)
       .throttle(reachRps(15) in (5 minutes), holdFor(145 minutes)),
     PplReadSimulation.Scenario.inject(constantUsersPerSec(30) during (150 minutes)).protocols(PplReadSimulation.HttpConf)
