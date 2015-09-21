@@ -17,6 +17,8 @@ import scala.language.postfixOps
 
 object GraphDB {
 
+  private val Logger = LoggerFactory.getLogger(getClass)
+
   case class Worker(host: String, client: Saboteur) {
     def this(host: String) = this(host, Saboteur.defineClient("worker-" + host, 8080, host))
   }
@@ -24,65 +26,65 @@ object GraphDB {
   implicit class GraphDBSaboteur(val self: Worker) extends AnyVal {
 
     def createFlakyConnectionIn(duration: FiniteDuration)(implicit SchedulerSystem: ActorSystem) = SchedulerSystem.scheduler.scheduleOnce(duration) {
-      Logger.info("Attempting to create a flaky connection to worker '{}'", self.host)
+      Logger.warn("Attempting to create a flaky connection to worker '{}'", self.host)
       self.client.addFault(packetLoss("flaky-connection").probability(40).correlation(15))
     }
 
     def createFlakyConnectionIn(duration: FiniteDuration, lasting: FiniteDuration)(implicit SchedulerSystem: ActorSystem) = {
       SchedulerSystem.scheduler.scheduleOnce(duration) {
-        Logger.info("Attempting to create a flaky connection to worker '{}'", self.host)
+        Logger.warn("Attempting to create a flaky connection to worker '{}'", self.host)
         self.client.addFault(packetLoss("flaky-connection").probability(40).correlation(15))
       }
       resetIn(duration + lasting)
     }
 
     def createSlowConnectionIn(duration: FiniteDuration)(implicit SchedulerSystem: ActorSystem) = SchedulerSystem.scheduler.scheduleOnce(duration) {
-      Logger.info("Attempting to create a slow connection to worker '{}'", self.host)
+      Logger.warn("Attempting to create a slow connection to worker '{}'", self.host)
       self.client.addFault(delay("response-slowness").delay(2, SECONDS).variance(1, SECONDS))
     }
 
     def createSlowConnectionIn(duration: FiniteDuration, lasting: FiniteDuration)(implicit SchedulerSystem: ActorSystem) = {
       SchedulerSystem.scheduler.scheduleOnce(duration) {
-        Logger.info("Attempting to create a slow connection to worker '{}'", self.host)
+        Logger.warn("Attempting to create a slow connection to worker '{}'", self.host)
         self.client.addFault(delay("response-slowness").delay(2, SECONDS).variance(1, SECONDS))
       }
       resetIn(duration + lasting)
     }
 
     def createNetworkFailureIn(duration: FiniteDuration)(implicit SchedulerSystem: ActorSystem) = SchedulerSystem.scheduler.scheduleOnce(duration) {
-      Logger.info("Attempting to create a network failure to worker '{}'", self.host)
+      Logger.warn("Attempting to create a network failure to worker '{}'", self.host)
       self.client.addFault(networkFailure("network-failure"))
     }
 
     def createNetworkFailureIn(duration: FiniteDuration, lasting: FiniteDuration)(implicit SchedulerSystem: ActorSystem) = {
       SchedulerSystem.scheduler.scheduleOnce(duration) {
-        Logger.info("Attempting to create a network failure to worker '{}'", self.host)
+        Logger.warn("Attempting to create a network failure to worker '{}'", self.host)
         self.client.addFault(networkFailure("network-failure"))
       }
       resetIn(duration + lasting)
     }
 
     def createServiceFailureIn(duration: FiniteDuration)(implicit SchedulerSystem: ActorSystem) = SchedulerSystem.scheduler.scheduleOnce(duration) {
-      Logger.info("Attempting to create a service failure to worker '{}'", self.host)
+      Logger.warn("Attempting to create a service failure to worker '{}'", self.host)
       self.client.addFault(serviceFailure("service-failure"))
     }
 
     def createServiceFailureIn(duration: FiniteDuration, lasting: FiniteDuration)(implicit SchedulerSystem: ActorSystem) = {
       SchedulerSystem.scheduler.scheduleOnce(duration) {
-        Logger.info("Attempting to create a service failure to worker '{}'", self.host)
+        Logger.warn("Attempting to create a service failure to worker '{}'", self.host)
         self.client.addFault(serviceFailure("service-failure"))
       }
       resetIn(duration + lasting)
     }
 
     def createFirewallTimeoutIn(duration: FiniteDuration)(implicit SchedulerSystem: ActorSystem) = SchedulerSystem.scheduler.scheduleOnce(duration) {
-      Logger.info("Attempting to create a firewall timeout failure to worker '{}'", self.host)
+      Logger.warn("Attempting to create a firewall timeout failure to worker '{}'", self.host)
       self.client.addFault(firewallTimeout("service-failure").timeout(500, MILLISECONDS))
     }
 
     def createFirewallTimeoutIn(duration: FiniteDuration, lasting: FiniteDuration)(implicit SchedulerSystem: ActorSystem) = {
       SchedulerSystem.scheduler.scheduleOnce(duration) {
-        Logger.info("Attempting to create a firewall timeout failure to worker '{}'", self.host)
+        Logger.warn("Attempting to create a firewall timeout failure to worker '{}'", self.host)
         self.client.addFault(firewallTimeout("service-failure").timeout(500, MILLISECONDS))
       }
       resetIn(duration + lasting)
@@ -100,8 +102,6 @@ object GraphDB {
   val WorkerTwo = new Worker("ftaps44670-law1a-eu-t")
   val WorkerThree = new Worker("ftaps44671-law1a-eu-t")
   val WorkerFour = new Worker("ftaps44839-law1a-eu-t")
-
-  private val Logger = LoggerFactory.getLogger(getClass)
 
   def resetAll() = {
     WorkerOne.reset()
