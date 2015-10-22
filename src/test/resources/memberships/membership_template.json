@@ -1,0 +1,15 @@
+{
+  "membershipUuid": "${uuid}",
+  "prefLabel": "${prefLabel}",
+  "personUuid": "${personUuid}",
+  "organisationUuid": "${orgUuid}",
+  "identifier": "${identifier}",
+  "agentRoleUuid": "${agentRoleUuid}",
+  "membershipRoles":
+  [
+    {
+      "membershipRoleUuid": "${membershipRoleUuid}",
+      "roleUuid": "${roleUuid}"
+    }
+  ]
+}
