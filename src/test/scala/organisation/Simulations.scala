@@ -139,7 +139,7 @@ object WriteSimulation {
     feed(Feeder)
       .exec(
         http("Write request")
-          .put("/organisation/${uuid}")
+          .put("/organisations/${uuid}")
           .body(ELFileBody("organisation/organisation_template.json"))
           .asJSON)
   }
