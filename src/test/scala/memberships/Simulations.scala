@@ -50,7 +50,7 @@ object WriteSimulation {
   val Scenario = scenario("Membership Write").during(Duration minutes) {
     feed(Feeder)
       .exec(
-        http("Write request")
+        http("Membership Write request")
           .put("/memberships/${uuid}")
           .body(ELFileBody("memberships/membership_template.json"))
           .asJSON)
@@ -78,7 +78,7 @@ object TransformerSimulation {
   val Scenario = scenario("Membership Transformer").during(Duration minutes) {
     feed(Feeder)
       .exec(
-        http("Membership request")
+        http("Membership Transformer request")
           .get("/transformers/memberships/${uuid}")
           .check(status is 200))
   }

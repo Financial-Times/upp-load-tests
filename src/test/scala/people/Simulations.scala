@@ -40,7 +40,7 @@ object TransformerSimulation {
   val Scenario = scenario("People Transformer").during(Duration minutes) {
     feed(Feeder)
       .exec(
-        http("Transformer request")
+        http("People Transformer request")
           .get("/transformers/people/${uuid}")
           .check(status is 200))
   }
@@ -70,7 +70,7 @@ object ReadSimulation {
   val Scenario = scenario("People Read").during(Duration minutes) {
     feed(Feeder)
       .exec(
-        http("Read request")
+        http("People Read request")
           .get("/people/${uuid}")
           .check(status is 200, jsonPath("$.id").is("http://api.ft.com/things/${uuid}")))
   }
@@ -106,7 +106,7 @@ object WriteSimulation {
         exec { session => session.setAll(PeopleUtils.getPeopleMap(session("character").as[String])) }
       )
       .exec(
-        http("Write request")
+        http("People Write request")
           .put("/people/${uuid}")
           .body(ELFileBody("people/people_template.json"))
           .asJSON)

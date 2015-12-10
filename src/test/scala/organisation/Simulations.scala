@@ -79,7 +79,7 @@ object TransformerSimulation {
   val Scenario = scenario("Organisation Transformer").during(Duration minutes) {
     feed(Feeder)
       .exec(
-        http("Transformer request")
+        http("Organisation Transformer request")
           .get("/transformers/organisations/${uuid}")
           .check(status is 200))
   }
@@ -108,7 +108,7 @@ object ReadSimulation {
   val Scenario = scenario("Organisation Read").during(Duration minutes) {
     feed(Feeder)
       .exec(
-        http("Read request")
+        http("Organisation Read request")
           .get("/organisations/${uuid}")
           .check(status is 200, jsonPath("$.id").is("http://api.ft.com/things/${uuid}")))
   }
@@ -138,7 +138,7 @@ object WriteSimulation {
   val Scenario = scenario("Organisation Write").during(Duration minutes) {
     feed(Feeder)
       .exec(
-        http("Write request")
+        http("Organisation Write request")
           .put("/organisations/${uuid}")
           .body(ELFileBody("organisation/organisation_template.json"))
           .asJSON)
