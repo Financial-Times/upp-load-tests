@@ -38,13 +38,22 @@ Most of the load test scenarios follow the above pattern. There are times though
 The available simulations are:
 
 1. FullLoadSimulation
-2. organisation.FullSimulation
-3. organisation.ReadSimulation
-4. organisation.TransformerSimulation
-5. organisation.WriteSimulation
-6. people.FullSimulation
-7. people.ReadSimulation
-8. people.TransformerSimulation
-9. people.WriteSimulation
+2. membership.FullSimulation
+3. membership.ReadSimulation
+4. membership.TransformerSimulation
+5. membership.WriteSimulation
+6. organisation.FullSimulation
+7. organisation.ReadSimulation
+8. organisation.TransformerSimulation
+9. organisation.WriteSimulation
+10. people.FullSimulation
+11. people.ReadSimulation
+12. people.TransformerSimulation
+13. people.WriteSimulation
+
 
 If you want to run the tests from your IDE, then all you need to do is run the class Engine. This will create a prompt menu giving you the option to select a gatling test to run. Doing it this way will mean you run with all the default values (unless you run it with the JVM arguments to override them).
+
+## Generate valid Uuids
+
+Run the generate scripts to retrieve a valid list of uuids for transformation.
