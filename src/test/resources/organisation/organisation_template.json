@@ -1,6 +1,5 @@
 {
   "uuid": "${uuid}",
-  "type": "${orgType}",
   "shortName": "${shortName}",
   "legalName": "${legalName}",
   "properName": "${name}",
