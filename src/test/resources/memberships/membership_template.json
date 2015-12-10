@@ -1,5 +1,5 @@
 {
-  "membershipUuid": "${uuid}",
+  "uuid": "${uuid}",
   "prefLabel": "${prefLabel}",
   "personUuid": "${personUuid}",
   "organisationUuid": "${orgUuid}",
