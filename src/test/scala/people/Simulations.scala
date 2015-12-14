@@ -64,7 +64,8 @@ object ReadSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    .baseURLs("http://ftaps30270-law1a-eu-t", "http://ftaps30275-law1a-eu-t")
+    .baseURLs("http://ftaps57190-law1a-eu-t")
+    // .baseURLs("http://ftaps30270-law1a-eu-t", "http://ftaps30275-law1a-eu-t")
     .userAgentHeader("People/Load-test")
 
   val Scenario = scenario("People Read").during(Duration minutes) {
@@ -72,7 +73,7 @@ object ReadSimulation {
       .exec(
         http("People Read request")
           .get("/people/${uuid}")
-          .check(status is 200, jsonPath("$.id").is("http://api.ft.com/things/${uuid}")))
+          .check(status is 200, jsonPath("$.uuid").is("${uuid}")))
   }
 }
 
