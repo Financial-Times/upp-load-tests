@@ -44,7 +44,7 @@ object WriteSimulation {
   val Duration = Integer.getInteger("soak-durtation-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    .baseURLs(System.getProperty("memberships_write_hosts").split(',').to[List])
+    .baseURLs(System.getProperty("memberships-write-hosts").split(',').to[List])
     .userAgentHeader("Membership/Load-test")
 
   val Scenario = scenario("Membership Write").during(Duration minutes) {
@@ -72,7 +72,7 @@ object TransformerSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    .baseURLs(System.getProperty("memberships_transformer_hosts").split(',').to[List])
+    .baseURLs(System.getProperty("memberships-transformer-hosts").split(',').to[List])
     .userAgentHeader("Membership/Load-test")
 
   val Scenario = scenario("Membership Transformer").during(Duration minutes) {

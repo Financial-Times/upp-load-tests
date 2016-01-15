@@ -34,7 +34,7 @@ object TransformerSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    .baseURLs(System.getProperty("people_transformer_hosts").split(',').to[List])
+    .baseURLs(System.getProperty("people-transformer-hosts").split(',').to[List])
     .userAgentHeader("People/Load-test")
 
   val Scenario = scenario("People Transformer").during(Duration minutes) {
@@ -64,7 +64,7 @@ object ReadSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    .baseURLs(System.getProperty("people_read_hosts").split(',').to[List])
+    .baseURLs(System.getProperty("people-read-hosts").split(',').to[List])
     .userAgentHeader("People/Load-test")
 
   val Scenario = scenario("People Read").during(Duration minutes) {
@@ -96,7 +96,7 @@ object WriteSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    .baseURLs(System.getProperty("people_write_hosts").split(',').to[List])
+    .baseURLs(System.getProperty("people-write-hosts").split(',').to[List])
     .userAgentHeader("People/Load-test")
 
   val Scenario = scenario("People Write").during(Duration minutes) {
