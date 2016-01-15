@@ -34,7 +34,7 @@ object TransformerSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    .baseURLs("http://ftaps35629-law1a-eu-t", "http://ftaps35630-law1a-eu-t")
+    .baseURLs(System.getProperty("people_transformer_hosts").split(',').to[List])
     .userAgentHeader("People/Load-test")
 
   val Scenario = scenario("People Transformer").during(Duration minutes) {
@@ -64,8 +64,7 @@ object ReadSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    .baseURLs("http://ftaps57190-law1a-eu-t")
-    // .baseURLs("http://ftaps30270-law1a-eu-t", "http://ftaps30275-law1a-eu-t")
+    .baseURLs(System.getProperty("people_read_hosts").split(',').to[List])
     .userAgentHeader("People/Load-test")
 
   val Scenario = scenario("People Read").during(Duration minutes) {
@@ -97,7 +96,7 @@ object WriteSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    .baseURLs("http://ftaps35659-law1a-eu-t", "http://ftaps35660-law1a-eu-t")
+    .baseURLs(System.getProperty("people_write_hosts").split(',').to[List])
     .userAgentHeader("People/Load-test")
 
   val Scenario = scenario("People Write").during(Duration minutes) {

@@ -44,7 +44,7 @@ object WriteSimulation {
   val Duration = Integer.getInteger("soak-durtation-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    .baseURLs("http://ftaps46911-law1a-eu-t:8080", "http://ftaps46912-law1b-eu-t:8080")
+    .baseURLs(System.getProperty("memberships_write_hosts").split(',').to[List])
     .userAgentHeader("Membership/Load-test")
 
   val Scenario = scenario("Membership Write").during(Duration minutes) {
@@ -72,7 +72,7 @@ object TransformerSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
-    .baseURL("http://ftaps50665-law1a-eu-t")
+    .baseURLs(System.getProperty("memberships_transformer_hosts").split(',').to[List])
     .userAgentHeader("Membership/Load-test")
 
   val Scenario = scenario("Membership Transformer").during(Duration minutes) {
