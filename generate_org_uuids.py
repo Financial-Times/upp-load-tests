@@ -25,17 +25,36 @@ organisations_response = requests.get('http://ftaps39403-law1a-eu-t/transformers
 # api_url_jpath = parse('.[].apiUrl')
 
 most_annotated = open('src/test/resources/organisation/most_annotated.uuid', 'r')
+most_relationships = open('src/test/resources/organisation/most_relationships.uuid', 'r')
 result_file = open('src/test/resources/organisation/organisations.uuid', 'w')
 result_file.write('%s\n' % 'uuid')
+
+def getMostRelationships(rnd_int, most_file, out_file):
+    if (random_int == 7 or random_int == 6):
+        most_uuid = most_file.readline()
+        if most_uuid != '':
+            out_file.write('%s' % most_uuid)
+        else:
+            most_file = open('src/test/resources/organisation/most_relationships.uuid', 'r')
+
+def getMostAnnodated(rnd_int, most_file, out_file):
+    if (random_int == 9 or random_int == 4):
+        most_uuid = most_file.readline()
+        if most_uuid != '':
+            out_file.write('%s' % most_uuid)
+        else:
+            most_file = open('src/test/resources/organisation/most_annotated.uuid', 'r')
+
+
 # for url in api_url_jpath.find(uuids_json):
 for obj in json.load(StringIO(organisations_response.content)):
-    if random.randint(0, 15) == 0:
-        uuid_re = re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', obj['apiUrl'])
-        result_file.write('%s\n' % uuid_re.group(0))
-        if random.randint(0, 12) == 0:
-            most_uuid = most_annotated.readline()
-            if most_uuid != '':
-                result_file.write('%s' % most_uuid)
+    if random.randint(0, 4) == 0:
+        random_int = int(random.gauss(7, 2))
+        getMostRelationships(random_int, most_relationships, result_file)
+	getMostAnnodated(random_int, most_annotated, result_file)
+        if (random_int == 8 or random_int == 5):
+            uuid_re = re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', obj['apiUrl'])
+            result_file.write('%s\n' % uuid_re.group(0))
 
 most_uuid = most_annotated.readline()
 
@@ -44,5 +63,6 @@ while most_uuid != '':
     most_uuid = most_annotated.readline()
 
 result_file.close()
+most_relationships.close()
+most_annotated.close()
 logging.info('Done')
-
