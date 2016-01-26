@@ -1,12 +1,10 @@
 #!/usr/bin/python
 import logging
-import requests
-import cjson
-import re
 import random
+import re
+import requests
 import simplejson as json
 from StringIO import StringIO
-from jsonpath_rw import jsonpath, parse
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -29,6 +27,7 @@ most_relationships = open('src/test/resources/organisation/most_relationships.uu
 result_file = open('src/test/resources/organisation/organisations.uuid', 'w')
 result_file.write('%s\n' % 'uuid')
 
+
 def getMostRelationships(rnd_int, most_file, out_file):
     if (random_int == 7 or random_int == 6):
         most_uuid = most_file.readline()
@@ -36,6 +35,7 @@ def getMostRelationships(rnd_int, most_file, out_file):
             out_file.write('%s' % most_uuid)
         else:
             most_file = open('src/test/resources/organisation/most_relationships.uuid', 'r')
+
 
 def getMostAnnodated(rnd_int, most_file, out_file):
     if (random_int == 9 or random_int == 4):
@@ -51,7 +51,7 @@ for obj in json.load(StringIO(organisations_response.content)):
     if random.randint(0, 4) == 0:
         random_int = int(random.gauss(7, 2))
         getMostRelationships(random_int, most_relationships, result_file)
-	getMostAnnodated(random_int, most_annotated, result_file)
+        getMostAnnodated(random_int, most_annotated, result_file)
         if (random_int == 8 or random_int == 5):
             uuid_re = re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', obj['apiUrl'])
             result_file.write('%s\n' % uuid_re.group(0))
