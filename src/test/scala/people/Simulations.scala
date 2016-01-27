@@ -72,7 +72,7 @@ object ReadSimulation {
       .exec(
         http("People Read request")
           .get("/people/${uuid}")
-          .check(status is 200, jsonPath("$.uuid").is("${uuid}")))
+          .check(status is 200, jsonPath("$.id").is("http://api.ft.com/things/${uuid}")))
   }
 }
 
