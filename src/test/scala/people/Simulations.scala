@@ -65,6 +65,7 @@ object ReadSimulation {
 
   val HttpConf = http
     .baseURLs(System.getProperty("people-read-hosts").split(',').to[List])
+    .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
     .userAgentHeader("People/Load-test")
 
   val Scenario = scenario("People Read").during(Duration minutes) {
@@ -97,6 +98,7 @@ object WriteSimulation {
 
   val HttpConf = http
     .baseURLs(System.getProperty("people-write-hosts").split(',').to[List])
+    .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
     .userAgentHeader("People/Load-test")
 
   val Scenario = scenario("People Write").during(Duration minutes) {
