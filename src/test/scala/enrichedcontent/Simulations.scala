@@ -8,7 +8,7 @@ import scala.language.postfixOps
 
 object ReadSimulation {
 
-  val Feeder = csv("enrichedcontent/content.uuid").random
+  val Feeder = csv("enrichedcontent/content.uuid." + System.getProperty("platform", "platform")).random
 
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
@@ -16,13 +16,14 @@ object ReadSimulation {
     .baseURLs(System.getProperty("enriched-content-read-hosts").split(',').to[List])
     .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
     .userAgentHeader("EnrichedContent/Load-test")
+    .header("x-api-key", System.getProperty("apiKey", "apiKey"))
 
   val Scenario = scenario("EnrichedContent Read").during(Duration minutes) {
     feed(Feeder)
       .exec(
         http("EnrichedContent Read request")
           .get("/enrichedcontent/${uuid}")
-          .check(status is 200, jsonPath("$.id").is("http://api.ft.com/thing/${uuid}")))
+          .check(status is 200))
   }
 }
 
