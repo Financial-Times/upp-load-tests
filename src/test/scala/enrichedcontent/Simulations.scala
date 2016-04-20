@@ -23,7 +23,8 @@ object ReadSimulation {
       .exec(
         http("EnrichedContent Read request")
           .get("/enrichedcontent/${uuid}")
-          .check(status is 200))
+          .check(status is 200)
+          .check(regex("\"id\":\"(http://api.ft.com/things/|http://www.ft.com/thing/)${uuid}\"")))
   }
 }
 
