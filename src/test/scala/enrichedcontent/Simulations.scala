@@ -20,13 +20,10 @@ object ReadSimulation {
 
   val Scenario = scenario("EnrichedContent Read").during(Duration minutes) {
     feed(Feeder)
-      .exec(session => {
+      .exec(
         http("EnrichedContent Read request")
           .get("/enrichedcontent/${uuid}")
-          .check(status is 200)
-          .check(jsonPath("$.id") in("http://api.ft.com/things/" + session("uuid").as[String], "http://www.ft.com/thing/" + session("uuid").as[String]))
-        session
-      })
+          .check(status is 200))
   }
 }
 
