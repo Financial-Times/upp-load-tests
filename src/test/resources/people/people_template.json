@@ -3,7 +3,7 @@
   "name": "${name}",
   "identifiers": [
     {
-      "authority": "http://api.ft.com/system/FACTSET-LOAD-TEST-PPL",
+      "authority": "http://api.ft.com/system/FACTSET-PPL",
       "identifierValue": "${id}"
     }
   ]

@@ -39,7 +39,7 @@ object OrgUtils {
     val name = ValidOrgNames.getRandom
     val nameSplit = name.split(' ')
     Map(
-      "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET-LOAD-TEST/" + id).getBytes(Charset.defaultCharset())).toString,
+      "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET-EDM/" + id).getBytes(Charset.defaultCharset())).toString,
       "orgType" -> OrganisationType.Organisation.toString,
       "id" -> id,
       "name" -> name,
@@ -54,7 +54,7 @@ case class OrganisationTemplate(id: String,
                                 name: String,
                                 orgType: OrganisationType.Value,
                                 industryClassification: String) {
-  val uuid = UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET-LOAD-TEST/" + id).getBytes(Charset.defaultCharset()))
+  val uuid = UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET-EDM/" + id).getBytes(Charset.defaultCharset()))
   val shortName = name substring(0, 3)
   val legalName = name substring (name.length / 2)
   val hiddenLabel = name filter (x => !(OrgUtils.RemoveLetters contains x))
