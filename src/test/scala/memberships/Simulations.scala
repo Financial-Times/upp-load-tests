@@ -26,7 +26,7 @@ object MembershipUtils {
     val identifier = (100000 + Random.nextInt(900000))
     val title = creativeJobTitles.getRandom
     Map(
-      "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET-LOAD-TEST/" + identifier).getBytes(Charset.defaultCharset())).toString,
+      "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET/" + identifier).getBytes(Charset.defaultCharset())).toString,
       "prefLabel" -> title,
       "personUuid" -> UUID.randomUUID(),
       "orgUuid" -> UUID.randomUUID(),

@@ -17,7 +17,7 @@
   ],
   "identifiers": [
     {
-      "authority": "http://api.ft.com/system/FACTSET-LOAD-TEST",
+      "authority": "http://api.ft.com/system/FACTSET-EDM",
       "identifierValue": "${id}"
     }
   ]

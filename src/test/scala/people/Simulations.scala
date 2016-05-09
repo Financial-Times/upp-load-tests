@@ -20,7 +20,7 @@ object PeopleUtils {
   def getPeopleMap(name: String): Map[String, String] = {
     val id = "PPL-" + f"${Random.nextInt(Integer.getInteger("org.write.max-id", 1000))}%04d"
     Map(
-      "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET-LOAD-TEST-PPL/" + id).getBytes(Charset.defaultCharset())).toString,
+      "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET-PPL/" + id).getBytes(Charset.defaultCharset())).toString,
       "name" -> name,
       "id" -> id
     )
