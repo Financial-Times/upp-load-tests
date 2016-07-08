@@ -50,9 +50,15 @@ The available simulations are:
 11. people.ReadSimulation
 12. people.TransformerSimulation
 13. people.WriteSimulation
-
+14. enrichedContent.ReadSimulation
 
 If you want to run the tests from your IDE, then all you need to do is run the class Engine. This will create a prompt menu giving you the option to select a gatling test to run. Doing it this way will mean you run with all the default values (unless you run it with the JVM arguments to override them).
+
+## Jenkins Jobs
+
+*http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/enriched-content-api-load-test-ucs-gateway/
+*http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/enriched-content-api-load-test-coco/
+*http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/enriched-content-api-load-test-ucs/
 
 ## Generate valid Uuids
 
