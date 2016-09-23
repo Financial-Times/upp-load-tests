@@ -14,7 +14,7 @@ pass" -Dplatform=coco -DapiKey=api_key -Dendpoint=/__content-public-read/content
   */
 object ReadSimulation {
 
-  val Feeder = csv(System.getProperty("UUID_CSV_PATH", "generic.uuid")).random
+  val Feeder = csv(System.getProperty("UUID_CSV_PATH", "generic.content.uuid")).random
 
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
