@@ -16,6 +16,9 @@ object ReadSimulation {
 
   val Feeder = csv(System.getProperty("uuid-csv-path", "generic.content.uuid")).random
 
+  val JsonPathForId = System.getProperty("json-path", "$.id")
+  val ExpectedIdPattern = System.getProperty("expected-id-pattern", "http://www.ft.com/thing/${uuid}")
+
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val ServiceHeader = "Load-test"
@@ -36,7 +39,7 @@ object ReadSimulation {
           .get(RequestUrl)
           .check(
             status is 200,
-            jsonPath("$.id").is("http://www.ft.com/thing/${uuid}")
+            jsonPath(JsonPathForId).is(ExpectedIdPattern)
           )
       )
   }
