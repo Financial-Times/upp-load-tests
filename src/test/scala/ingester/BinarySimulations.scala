@@ -25,16 +25,16 @@ object BinaryWriterSimulation {
 
   val sentHeaders = Map(
     "Content-Type" -> "application/octet-stream",
-    "Content-Length" -> binaryBlob.length)
+    "Content-Length" -> String.valueOf(size))
 
   val Scenario = scenario("Binary Ingestion").during(Duration minutes) {
-    exec {
-      session => session.set("file_uuid", "load-" + UUID.randomUUID().toString)
-    }
-    exec(http("Binary Writer request")
-      .put("/__binary-writer/binary/${file_uuid}")
-      .body(ByteArrayBody(binaryBlob))
-      .check(status is 200))
+    exec(_.set("file_uuid", "load-" + UUID.randomUUID().toString))
+      .exec(
+        http("Binary Writer request")
+          .put("/__binary-writer/binary/${file_uuid}")
+          .headers(sentHeaders)
+          .body(ByteArrayBody(binaryBlob))
+          .check(status is 200))
   }
 
 }
