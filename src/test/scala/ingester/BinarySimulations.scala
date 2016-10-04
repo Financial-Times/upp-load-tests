@@ -1,5 +1,7 @@
 package ingester
 
+import java.util.UUID
+
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import org.joda.time.format.ISODateTimeFormat
@@ -8,7 +10,47 @@ import utils.LoadTestDefaults._
 
 import scala.language.postfixOps
 
-object BinarySimulation {
+object BinaryWriterSimulation {
+  val size = 1024 * 1024 * 16
+  val binaryBlob: Array[Byte] = new Array(size)
+  val r = scala.util.Random
+  r.nextBytes(binaryBlob)
+
+  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
+
+  val HttpConf = http
+    .baseURLs(System.getProperty("binary-writer-hosts").split(',').to[List])
+    .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
+    .userAgentHeader("BinaryWriter/Load-test")
+
+  val sentHeaders = Map(
+    "Content-Type" -> "application/octet-stream",
+    "Content-Length" -> binaryBlob.length)
+
+  val Scenario = scenario("Binary Ingestion").during(Duration minutes) {
+    exec {
+      session => session.set("file_uuid", "load-" + UUID.randomUUID().toString)
+    }
+    exec(http("Binary Writer request")
+      .put("/__binary-writer/binary/${file_uuid}")
+      .body(ByteArrayBody(binaryBlob))
+      .check(status is 200))
+  }
+
+}
+
+class BinaryWriterSimulation extends Simulation {
+
+  val numUsers = Integer.getInteger("users", DefaultNumUsers)
+  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
+
+  setUp(
+    BinaryWriterSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+  ).protocols(BinaryWriterSimulation.HttpConf)
+
+}
+
+object BinaryIngesterSimulation {
 
   val Feeder = csv("ingester/image.uuid").random
 
@@ -21,7 +63,9 @@ object BinarySimulation {
     .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
     .userAgentHeader("BinaryIngester/Load-test")
 
-  val sentHeaders = Map("Content-Type" -> "application/json", "Accept" -> "application/json")
+  val sentHeaders = Map(
+    "Content-Type" -> "application/json",
+    "Accept" -> "application/json")
 
   val Scenario = scenario("Binary Ingestion").during(Duration minutes) {
     feed(Feeder)
@@ -76,13 +120,13 @@ object BinarySimulation {
   }
 }
 
-class BinarySimulation extends Simulation {
+class BinaryIngesterSimulation extends Simulation {
 
   val numUsers = Integer.getInteger("users", DefaultNumUsers)
   val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
 
   setUp(
-    BinarySimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
-  ).protocols(BinarySimulation.HttpConf)
+    BinaryIngesterSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+  ).protocols(BinaryIngesterSimulation.HttpConf)
 
 }
