@@ -162,6 +162,12 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <jvmArgs>
+                        <jvmArg>-Xms2048m</jvmArg>
+                        <jvmArg>-Xmx2048m</jvmArg>
+                        <jvmArg>-XX:+UseG1GC</jvmArg>
+                        <jvmArg>-server</jvmArg>
+                    </jvmArgs>
                     <propagateSystemProperties>true</propagateSystemProperties>
                 </configuration>
             </plugin>
