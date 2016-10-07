@@ -1,5 +1,7 @@
 package wordpress
 
+import java.util.concurrent.atomic.AtomicLong
+
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import org.joda.time.format.ISODateTimeFormat
@@ -10,7 +12,14 @@ import scala.language.postfixOps
 
 object ImageTransformerSimulation {
 
+  val counter: ThreadLocal[AtomicLong] = new ThreadLocal[AtomicLong]() {
+    override protected def initialValue: AtomicLong = {
+      new AtomicLong(0)
+    }
+  }
+
   val formatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.getDefault)
+
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
   val HttpConf = http
     .baseURLs(System.getProperty("hosts").split(',').to[List])
@@ -22,7 +31,7 @@ object ImageTransformerSimulation {
       .exec(
         http("Wordpress Image Transformer request")
           .post("/__wordpress-image-mapper/import")
-          .header("X-Request-Id", (s: Session) => "tid_wip" + s.userId.toString)
+          .header("X-Request-Id", (s: Session) => "tid_lt" + s.userId.toString + counter.get().getAndIncrement())
           .body(StringBody(
             """{
               |  "apiUrl": "http://blogs.ft.com/brusselsblog/api/get_post/?id=65281",
