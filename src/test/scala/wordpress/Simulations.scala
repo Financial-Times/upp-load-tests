@@ -12,9 +12,13 @@ import scala.language.postfixOps
 
 object ImageTransformerSimulation {
 
+  val counter: ThreadLocal[AtomicLong] = new ThreadLocal[AtomicLong]() {
+    override protected def initialValue: AtomicLong = {
+      new AtomicLong(0)
+    }
+  }
+
   val formatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.getDefault)
-  val counter = new ThreadLocal[AtomicLong]
-  counter.set(new AtomicLong(0))
 
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
   val HttpConf = http
