@@ -14,7 +14,8 @@ object ImageTransformerSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
   val HttpConf = http
     .baseURLs(System.getProperty("hosts").split(',').to[List])
-    .userAgentHeader("People/Load-test")
+    .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
+    .userAgentHeader("WordpressImageTransformer/Load-test")
 
   val Scenario = scenario("Wordpress Image Transformer").during(Duration minutes) {
     exec(_.set("modified", getIsoDate))
