@@ -9,16 +9,16 @@ import io.gatling.http.Predef._
 import utils.LoadTestDefaults._
 
 import scala.language.postfixOps
-import scala.util.Random
+import scala.concurrent.forkjoin.ThreadLocalRandom.{current => Rnd}
 
 object PeopleUtils {
 
   implicit class RandomList[A](val self: List[A]) extends AnyVal {
-    def getRandom: A = self(Random.nextInt(self.size))
+    def getRandom: A = self(Rnd().nextInt(self.size))
   }
 
   def getPeopleMap(name: String): Map[String, String] = {
-    val id = "PPL-" + f"${Random.nextInt(Integer.getInteger("org.write.max-id", 1000))}%04d"
+    val id = "PPL-" + f"${Rnd().nextInt(Integer.getInteger("org.write.max-id", 1000))}%04d"
     Map(
       "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET-PPL/" + id).getBytes(Charset.defaultCharset())).toString,
       "name" -> name,

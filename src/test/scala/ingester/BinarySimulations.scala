@@ -54,7 +54,7 @@ object BinaryIngesterSimulation {
 
   val Feeder = csv("ingester/image.uuid").random
 
-  val formatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.getDefault())
+  val formatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.getDefault)
 
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 

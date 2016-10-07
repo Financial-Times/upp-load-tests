@@ -7,11 +7,12 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import utils.LoadTestDefaults._
 
-import scala.util.Random
+import scala.concurrent.forkjoin.ThreadLocalRandom.{current => Rnd}
 
 object MembershipUtils {
+
   implicit class RandomList[A](val self: List[A]) extends AnyVal {
-    def getRandom: A = self(Random.nextInt(self.size))
+    def getRandom: A = self(Rnd().nextInt(self.size))
   }
 
   val creativeJobTitles = List(
@@ -23,7 +24,7 @@ object MembershipUtils {
   )
 
   def getMembershipMap = {
-    val identifier = (100000 + Random.nextInt(900000))
+    val identifier = (100000 + Rnd().nextInt(900000))
     val title = creativeJobTitles.getRandom
     Map(
       "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET/" + identifier).getBytes(Charset.defaultCharset())).toString,

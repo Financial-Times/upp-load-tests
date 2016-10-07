@@ -5,7 +5,7 @@ package notifications_rw
   *
   * USAGE:
   * mvn clean gatling:execute -Dgatling.simulationClass=notifications_rw.ReadSimulation -Dusers=50 -Dramp-up-minutes=2 -Dsoak-duration-minutes=5 -Dnotifications-read-hosts="https://pre-prod-up.ft.com"
--Dusername="pre-prod_User" -Dpassword="pre-prod_Ppass"
+  * -Dusername="pre-prod_User" -Dpassword="pre-prod_Ppass"
   */
 
 import com.github.nscala_time.time.Imports._
@@ -14,8 +14,8 @@ import io.gatling.http.Predef._
 import org.slf4j.LoggerFactory
 import utils.LoadTestDefaults._
 
+import scala.concurrent.forkjoin.ThreadLocalRandom.{current => Rnd}
 import scala.language.postfixOps
-import scala.util.Random
 
 object ReadSimulation {
   private val Logger = LoggerFactory.getLogger(getClass)
@@ -27,7 +27,7 @@ object ReadSimulation {
     .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
     .userAgentHeader("EnrichedContent/Load-test")
 
-  val Feeder = Iterator.continually(Map("since" -> DateTime.now().minusHours(3).plusMillis(Random.nextInt(1000)).toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'"))))
+  val Feeder = Iterator.continually(Map("since" -> DateTime.now().minusHours(3).plusMillis(Rnd().nextInt(1000)).toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'"))))
   val Scenario = scenario("Notifications Read").during(Duration minutes) {
     feed(Feeder).
       exec(http("Notifications Read request")

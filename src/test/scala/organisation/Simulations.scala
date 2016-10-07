@@ -7,8 +7,8 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import utils.LoadTestDefaults._
 
+import scala.concurrent.forkjoin.ThreadLocalRandom.{current => Rnd}
 import scala.language.postfixOps
-import scala.util.Random
 
 object OrganisationType extends Enumeration {
   val Organisation, PublicCompany = Value
@@ -17,7 +17,7 @@ object OrganisationType extends Enumeration {
 object OrgUtils {
 
   implicit class RandomList[A](val self: List[A]) extends AnyVal {
-    def getRandom: A = self(Random.nextInt(self.size))
+    def getRandom: A = self(Rnd().nextInt(self.size))
   }
 
   val RemoveLetters = List(' ', 'a', 'e', 'i', 'o', 'u')
@@ -35,7 +35,7 @@ object OrgUtils {
     "Circle & Cloth")
 
   def getOrgMap = {
-    val id = "ORG-" + f"${Random.nextInt(Integer.getInteger("org.write.max-id", 1000))}%04d"
+    val id = "ORG-" + f"${Rnd().nextInt(Integer.getInteger("org.write.max-id", 1000))}%04d"
     val name = ValidOrgNames.getRandom
     val nameSplit = name.split(' ')
     Map(

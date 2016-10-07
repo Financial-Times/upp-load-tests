@@ -6,8 +6,8 @@ import io.gatling.http.Predef._
 import org.slf4j.LoggerFactory
 import utils.LoadTestDefaults._
 
+import scala.concurrent.forkjoin.ThreadLocalRandom.{current => Rnd}
 import scala.language.postfixOps
-import scala.util.Random
 
 object ReadSimulation {
   private val Logger = LoggerFactory.getLogger(getClass)
@@ -19,7 +19,7 @@ object ReadSimulation {
     .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
     .userAgentHeader("EnrichedContent/Load-test")
 
-  val Feeder = Iterator.continually(Map("since" -> DateTime.now().minusMonths(3).plusMillis(Random.nextInt(1000)).toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'"))))
+  val Feeder = Iterator.continually(Map("since" -> DateTime.now().minusMonths(3).plusMillis(Rnd().nextInt(1000)).toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'"))))
   val Scenario = scenario("Notifications Read").during(Duration minutes) {
     feed(Feeder).
       exec(http("Notifications Read request")
