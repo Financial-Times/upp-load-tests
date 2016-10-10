@@ -31,7 +31,7 @@ object ImageTransformerSimulation {
       .exec(
         http("Wordpress Image Transformer request")
           .post("/__wordpress-image-mapper/import")
-          .header("X-Request-Id", (s: Session) => "tid_lt" + s.userId.toString + counter.get().getAndIncrement())
+          .header("X-Request-Id", (s: Session) => getRequestId(s, "wit"))
           .body(StringBody(
             """{
               |  "apiUrl": "http://blogs.ft.com/brusselsblog/api/get_post/?id=65281",
