@@ -1,37 +1,25 @@
 package wordpress
 
-import java.util.concurrent.atomic.AtomicLong
-
+import com.github.nscala_time.time.Imports.{DateTime, DateTimeZone}
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import org.joda.time.format.ISODateTimeFormat
-import org.joda.time.{DateTime, DateTimeZone}
 import utils.LoadTestDefaults._
 
 import scala.language.postfixOps
 
 object ImageTransformerSimulation {
 
-  val counter: ThreadLocal[AtomicLong] = new ThreadLocal[AtomicLong]() {
-    override protected def initialValue: AtomicLong = {
-      new AtomicLong(0)
-    }
-  }
-
   val formatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.getDefault)
 
-  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
-  val HttpConf = http
-    .baseURLs(System.getProperty("hosts").split(',').to[List])
-    .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
-    .userAgentHeader("WordpressImageTransformer/Load-test")
+  val HttpConf = getDefaultHttpConf("WordpressImageTransformer/Load-test")
 
   val Scenario = scenario("Wordpress Image Transformer").during(Duration minutes) {
     exec(_.set("modified", getIsoDate))
       .exec(
         http("Wordpress Image Transformer request")
           .post("/__wordpress-image-mapper/import")
-          .header("X-Request-Id", (s: Session) => getRequestId(s, "wit"))
+          .header(RequestIdHeader, (s: Session) => getRequestId(s, "wit"))
           .body(StringBody(
             """{
               |  "apiUrl": "http://blogs.ft.com/brusselsblog/api/get_post/?id=65281",
@@ -273,11 +261,9 @@ object ImageTransformerSimulation {
 }
 
 class ImageTransformerSimulation extends Simulation {
-  val numUsers = Integer.getInteger("users", DefaultNumUsers)
-  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
 
   setUp(
-    ImageTransformerSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+    ImageTransformerSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes))
   ).protocols(ImageTransformerSimulation.HttpConf)
 
 }

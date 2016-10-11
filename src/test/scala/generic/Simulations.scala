@@ -10,8 +10,8 @@ import scala.language.postfixOps
   * Generic Load Test for any service endpoint.
   *
   * USAGE: mvn gatling:execute -Dgatling.simulationClass=generic.ReadSimulation -Dusers=50 -Dramp-up-minutes=5 -Dsoak-duration-minutes=10 -Dhosts="https://semantic-up.ft.com" -Dusername="user" -Dpassword="
-pass" -Dplatform=coco -DapiKey=api_key -Dendpoint=/__content-public-read/content
-  */
+  * pass" -Dplatform=coco -DapiKey=api_key -Dendpoint=/__content-public-read/content
+  **/
 object ReadSimulation {
 
   val Feeder = csv(System.getProperty("uuid-csv-path", "generic.content.uuid")).random
@@ -37,6 +37,7 @@ object ReadSimulation {
       .exec(
         http(ServiceScenario)
           .get(RequestUrl)
+          .header(RequestIdHeader, (s: Session) => getRequestId(s, "glt"))
           .check(
             status is 200,
             jsonPath(JsonPathForId).is(ExpectedIdPattern)
@@ -48,22 +49,16 @@ object ReadSimulation {
 
 class ReadSimulation extends Simulation {
 
-  val numUsers = Integer.getInteger("users", DefaultNumUsers)
-  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
-
   setUp(
-    ReadSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+    ReadSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes))
   ).protocols(ReadSimulation.HttpConf)
 
 }
 
 class FullSimulation extends Simulation {
 
-  val numReadUsers = Integer.getInteger("users", DefaultNumUsers)
-  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
-
   setUp(
-    ReadSimulation.Scenario.inject(rampUsers(numReadUsers) over (rampUp minutes)).protocols(ReadSimulation.HttpConf)
-  )
+    ReadSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes))
+  ).protocols(ReadSimulation.HttpConf)
 
 }

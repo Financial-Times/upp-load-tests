@@ -26,12 +26,10 @@ import scala.language.postfixOps
   */
 object ReadSimulation {
 
-  val Feeder = csv(System.getProperty("uuid-csv-path", "lists/sample.lists.uuid")).random
+  val Feeder = getDefaultFeeder("lists/sample.lists.uuid")
 
   val JsonPathForId = System.getProperty("json-path", "$.id")
   val ExpectedIdPattern = System.getProperty("expected-id-pattern", "http://www.ft.com/things/${uuid}")
-
-  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val ServiceHeader = "Load-test"
   val ServiceEndpoint = "/" + System.getProperty("endpoint")
@@ -49,30 +47,25 @@ object ReadSimulation {
       .exec(
         http(ServiceScenario)
           .get(RequestUrl)
+          .header(RequestIdHeader, (s: Session) => getRequestId(s, "grok"))
           .check(status is 200)
-          )
+      )
   }
 }
 
 
 class ReadSimulation extends Simulation {
 
-  val numUsers = Integer.getInteger("users", DefaultNumUsers)
-  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
-
   setUp(
-    ReadSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+    ReadSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes))
   ).protocols(ReadSimulation.HttpConf)
 
 }
 
 class FullSimulation extends Simulation {
 
-  val numReadUsers = Integer.getInteger("users", DefaultNumUsers)
-  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
-
   setUp(
-    ReadSimulation.Scenario.inject(rampUsers(numReadUsers) over (rampUp minutes)).protocols(ReadSimulation.HttpConf)
+    ReadSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes)).protocols(ReadSimulation.HttpConf)
   )
 
 }

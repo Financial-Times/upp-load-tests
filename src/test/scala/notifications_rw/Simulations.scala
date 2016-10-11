@@ -8,19 +8,15 @@ package notifications_rw
   * -Dusername="pre-prod_User" -Dpassword="pre-prod_Ppass"
   */
 
-import com.github.nscala_time.time.Imports._
+import com.github.nscala_time.time.Imports.{DateTime, DateTimeFormat}
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import org.slf4j.LoggerFactory
 import utils.LoadTestDefaults._
 
 import scala.concurrent.forkjoin.ThreadLocalRandom.{current => Rnd}
 import scala.language.postfixOps
 
 object ReadSimulation {
-  private val Logger = LoggerFactory.getLogger(getClass)
-
-  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
     .baseURLs(System.getProperty("notifications-read-hosts").split(',').to[List])
@@ -32,6 +28,7 @@ object ReadSimulation {
     feed(Feeder).
       exec(http("Notifications Read request")
         .get("/__notifications-rw/content/notifications?since=${since}")
+        .header(RequestIdHeader, (s: Session) => getRequestId(s, "nrlt"))
         .check(status is 200))
   }
 }

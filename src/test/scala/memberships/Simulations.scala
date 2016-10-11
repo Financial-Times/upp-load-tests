@@ -8,6 +8,7 @@ import io.gatling.http.Predef._
 import utils.LoadTestDefaults._
 
 import scala.concurrent.forkjoin.ThreadLocalRandom.{current => Rnd}
+import scala.language.postfixOps
 
 object MembershipUtils {
 
@@ -24,7 +25,7 @@ object MembershipUtils {
   )
 
   def getMembershipMap = {
-    val identifier = (100000 + Rnd().nextInt(900000))
+    val identifier = 100000 + Rnd().nextInt(900000)
     val title = creativeJobTitles.getRandom
     Map(
       "uuid" -> UUID.nameUUIDFromBytes(("http://api.ft.com/system/FACTSET/" + identifier).getBytes(Charset.defaultCharset())).toString,
@@ -42,8 +43,6 @@ object MembershipUtils {
 object WriteSimulation {
   val Feeder = Iterator.continually(MembershipUtils.getMembershipMap)
 
-  val Duration = Integer.getInteger("soak-durtation-minutes", DefaultSoakDurationInMinutes)
-
   val HttpConf = http
     .baseURLs(System.getProperty("memberships-write-hosts").split(',').to[List])
     .userAgentHeader("Membership/Load-test")
@@ -53,6 +52,7 @@ object WriteSimulation {
       .exec(
         http("Membership Write request")
           .put("/memberships/${uuid}")
+          .header(RequestIdHeader, (s: Session) => getRequestId(s, "mtw"))
           .body(ELFileBody("memberships/membership_template.json"))
           .asJSON)
   }
@@ -60,17 +60,14 @@ object WriteSimulation {
 
 class WriteSimulation extends Simulation {
   val numUsers = Integer.getInteger("users", DefaultNumUsers / 10)
-  val rampUp = Integer.getInteger("ramp-up-minutes", 1)
 
   setUp(
-    WriteSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+    WriteSimulation.Scenario.inject(rampUsers(numUsers) over (RampUp minutes))
   ).protocols(WriteSimulation.HttpConf)
 }
 
 object TransformerSimulation {
-  val Feeder = csv("memberships/memberships.uuid").random
-
-  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
+  val Feeder = getDefaultFeeder("memberships/memberships.uuid")
 
   val HttpConf = http
     .baseURLs(System.getProperty("memberships-transformer-hosts").split(',').to[List])
@@ -81,26 +78,24 @@ object TransformerSimulation {
       .exec(
         http("Membership Transformer request")
           .get("/transformers/memberships/${uuid}")
+          .header(RequestIdHeader, (s: Session) => getRequestId(s, "mtr"))
           .check(status is 200))
   }
 }
 
 class TransformerSimulation extends Simulation {
-  val numUsers = Integer.getInteger("users", DefaultNumUsers)
-  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
 
   setUp(
-    TransformerSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+    TransformerSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes))
   ).protocols(TransformerSimulation.HttpConf)
+
 }
 
 class FullSimulation extends Simulation {
-  val numReadUsers = Integer.getInteger("users", DefaultNumUsers)
-  val numWriteUsers = Integer.getInteger("write-users", numReadUsers.toInt / 10)
-  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
+  val numWriteUsers = Integer.getInteger("write-users", NumUsers.toInt / 10)
 
   setUp(
-    TransformerSimulation.Scenario.inject(rampUsers(numWriteUsers) over (rampUp minutes)).protocols(TransformerSimulation.HttpConf),
-    WriteSimulation.Scenario.inject(rampUsers(numWriteUsers) over (rampUp minutes)).protocols(WriteSimulation.HttpConf)
+    TransformerSimulation.Scenario.inject(rampUsers(numWriteUsers) over (RampUp minutes)).protocols(TransformerSimulation.HttpConf),
+    WriteSimulation.Scenario.inject(rampUsers(numWriteUsers) over (RampUp minutes)).protocols(WriteSimulation.HttpConf)
   )
 }

@@ -23,6 +23,7 @@ object ReadSimulation {
       .exec(
         http("EnrichedContent Read request")
           .get("/enrichedcontent/${uuid}")
+          .header(RequestIdHeader, (s: Session) => getRequestId(s, "eclt"))
           .check(status is 200)
           .check(regex("\"id\":\"(http://api.ft.com/things/|http://www.ft.com/thing/)${uuid}\"")))
   }
@@ -31,22 +32,16 @@ object ReadSimulation {
 
 class ReadSimulation extends Simulation {
 
-  val numUsers = Integer.getInteger("users", DefaultNumUsers)
-  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
-
   setUp(
-    ReadSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+    ReadSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes))
   ).protocols(ReadSimulation.HttpConf)
 
 }
 
 class FullSimulation extends Simulation {
 
-  val numReadUsers = Integer.getInteger("users", DefaultNumUsers)
-  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
-
   setUp(
-    ReadSimulation.Scenario.inject(rampUsers(numReadUsers) over (rampUp minutes)).protocols(ReadSimulation.HttpConf)
+    ReadSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes)).protocols(ReadSimulation.HttpConf)
   )
 
 }

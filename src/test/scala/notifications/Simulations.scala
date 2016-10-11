@@ -1,18 +1,14 @@
 package notifications
 
-import com.github.nscala_time.time.Imports._
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import org.slf4j.LoggerFactory
+import com.github.nscala_time.time.Imports.{DateTime, DateTimeFormat}
 import utils.LoadTestDefaults._
 
 import scala.concurrent.forkjoin.ThreadLocalRandom.{current => Rnd}
 import scala.language.postfixOps
 
 object ReadSimulation {
-  private val Logger = LoggerFactory.getLogger(getClass)
-
-  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = http
     .baseURLs(System.getProperty("notifications-read-hosts").split(',').to[List])
@@ -24,27 +20,23 @@ object ReadSimulation {
     feed(Feeder).
       exec(http("Notifications Read request")
         .get("/content/notifications?since=${since}")
+        .header(RequestIdHeader, (s: Session) => getRequestId(s, "nrlt"))
         .check(status is 200))
   }
 }
 
 class ReadSimulation extends Simulation {
 
-  val numUsers = Integer.getInteger("users", DefaultNumUsers)
-  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
-
   setUp(
-    ReadSimulation.Scenario.inject(rampUsers(numUsers) over (rampUp minutes))
+    ReadSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes))
   ).protocols(ReadSimulation.HttpConf)
 
 }
 
 class FullSimulation extends Simulation {
 
-  val numReadUsers = Integer.getInteger("users", DefaultNumUsers)
-  val rampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
-
   setUp(
-    ReadSimulation.Scenario.inject(rampUsers(numReadUsers) over (rampUp minutes)).protocols(ReadSimulation.HttpConf)
+    ReadSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes)).protocols(ReadSimulation.HttpConf)
   )
+
 }
