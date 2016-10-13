@@ -14,10 +14,7 @@ import scala.language.postfixOps
 object WriteSimulation {
 
   val Feeder = getDefaultFeeder("notifier/one_article.uuid")
-  val ServiceHeader = "Notifier/Load-test"
-  val ServiceEndpoint = "/notify"
-  val RequestUrl = ServiceEndpoint
-  val ServiceScenario = System.getProperty("endpoint") + " Publish Request"
+  val ServiceHeader = "Notifier"
   val HttpConf = getDefaultHttpConf(ServiceHeader)
 
   val Scenario = scenario("Notifier Publish").during(Duration minutes) {
