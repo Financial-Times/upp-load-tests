@@ -20,7 +20,7 @@ object MethodeImporterSimulation {
     feed(Feeder)
       .exec(
         http("Methode Content Importer request")
-          .put("/__content-ingester/import")
+          .post("/__methode-content-importer/import")
           .header(RequestIdHeader, (s: Session) => getRequestId(s, "mcilt"))
           .body(ELFileBody("notifier/raw_methode_content.json")).asJSON
           .check(status is 200)
@@ -48,7 +48,7 @@ object WordpressImporterSimulation {
     feed(Feeder)
       .exec(
         http("Wordpress Content Importer request")
-          .put("/__content-ingester/import-wordpress")
+          .post("/__methode-content-importer/import-wordpress")
           .header(RequestIdHeader, (s: Session) => getRequestId(s, "wcilt"))
           .body(ELFileBody("notifier/raw_methode_content.json")).asJSON
           .check(status is 200)
