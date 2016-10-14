@@ -1,0 +1,59 @@
+{
+  "suggestions": [
+    {
+      "thing": {
+        "id": "http://api.ft.com/things/${orgUuid}",
+        "prefLabel": "${organisation}",
+        "types": [
+          "http://www.ft.com/ontology/organisation/Organisation",
+          "http://www.ft.com/ontology/core/Thing",
+          "http://www.ft.com/ontology/concept/Concept"
+        ]
+      },
+      "provenances": [
+        {
+          "scores": [
+            {
+              "scoringSystem": "http://api.ft.com/scoringsystem/FT-RELEVANCE-SYSTEM",
+              "value": 0.087164750957854
+            },
+            {
+              "scoringSystem": "http://api.ft.com/scoringsystem/FT-CONFIDENCE-SYSTEM",
+              "value": 0.98893135448831
+            }
+          ],
+          "atTime": "2016-10-11T07:50:22.815Z",
+          "agentRole": "http://api.ft.com/things/0edd3c31-1fd0-4ef6-9230-8d545be3880a"
+        }
+      ]
+    },
+    {
+      "thing": {
+        "id": "http://api.ft.com/things/${personUuid}",
+        "prefLabel": "${person}",
+        "types": [
+          "http://www.ft.com/ontology/core/Thing",
+          "http://www.ft.com/ontology/person/Person",
+          "http://www.ft.com/ontology/concept/Concept"
+        ]
+      },
+      "provenances": [
+        {
+          "scores": [
+            {
+              "scoringSystem": "http://api.ft.com/scoringsystem/FT-RELEVANCE-SYSTEM",
+              "value": 1
+            },
+            {
+              "scoringSystem": "http://api.ft.com/scoringsystem/FT-CONFIDENCE-SYSTEM",
+              "value": 0.72612653623993
+            }
+          ],
+          "atTime": "2016-10-11T07:50:22.815Z",
+          "agentRole": "http://api.ft.com/things/0edd3c31-1fd0-4ef6-9230-8d545be3880a"
+        }
+      ]
+    }
+  ],
+  "uuid": "${uuid}"
+}
