@@ -1,5 +1,6 @@
 package utils
 
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicLong
 
 import io.gatling.core.Predef._
@@ -29,6 +30,10 @@ object LoadTestDefaults {
   }
 
   def getDefaultFeeder(defaultCSVPath: String) = csv(System.getProperty("uuid-csv-path", defaultCSVPath)).random
+
+  def getRandomUUIDFeeder = Iterator.continually(Map(
+    "uuid" -> UUID.randomUUID()
+  ))
 
   def getRequestId(s: Session, identifier: String) = "tid_" + identifier + s.userId.toString + Counter.get().getAndIncrement()
 }
