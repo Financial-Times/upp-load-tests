@@ -21,7 +21,7 @@ object WriteSimulation {
     feed(Feeder)
       .exec(
         http("Notifier Write request")
-          .post("/notify")
+          .post("/__cms-notifier/notify")
           .header("X-Origin-System-Id", "methode-web-pub")
           .header(RequestIdHeader, (s: Session) => getRequestId(s, "nwlt"))
           .body(ELFileBody("notifier/raw_methode_content.json")).asJSON
@@ -47,7 +47,7 @@ object LargeWriteSimulation {
     feed(Feeder)
       .exec(
         http("Large Notifier Write request")
-          .post("/notify")
+          .post("/__cms-notifier/notify")
           .header("X-Origin-System-Id", "methode-web-pub")
           .header(RequestIdHeader, (s: Session) => getRequestId(s, "nlwlt"))
           .body(ELFileBody("notifier/large_methode_content.json")).asJSON
