@@ -1,6 +1,7 @@
 package generic
 
 import io.gatling.core.Predef._
+import io.gatling.core.feeder.FeederBuilder
 import io.gatling.http.Predef._
 import utils.LoadTestDefaults._
 
@@ -18,32 +19,29 @@ object ReadSimulation {
 
   val JsonPathForId = System.getProperty("json-path", "$.id")
   val ExpectedIdPattern = System.getProperty("expected-id-pattern", "http://www.ft.com/thing/${uuid}")
-
-  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
-
   val ServiceHeader = "Load-test"
   val ServiceEndpoint = "/" + System.getProperty("endpoint")
   val RequestUrl = ServiceEndpoint + "/${uuid}"
   val ServiceScenario = System.getProperty("endpoint") + " Read Request"
 
-  val HttpConf = http
-    .baseURLs(System.getProperty("hosts").split(',').to[List])
-    .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
-    .userAgentHeader(ServiceHeader)
+  val HttpConf = getDefaultHttpConf(ServiceHeader)
     .header("x-api-key", System.getProperty("apiKey", "apiKey"))
 
-  val Scenario = scenario(ServiceScenario).during(Duration minutes) {
-    feed(Feeder)
-      .exec(
-        http(ServiceScenario)
-          .get(RequestUrl)
-          .header(RequestIdHeader, (s: Session) => getRequestId(s, "glt"))
-          .check(
-            status is 200,
-            jsonPath(JsonPathForId).is(ExpectedIdPattern)
-          )
-      )
-  }
+  val Scenario = buildScenario(Feeder, ServiceScenario, RequestUrl, JsonPathForId, ExpectedIdPattern)
+
+  def buildScenario(feeder: FeederBuilder[_], serviceScenario: String, requestUrl: String, jsonPathForId: String, expectedIdPattern: String) =
+    scenario(serviceScenario).during(Duration minutes) {
+      feed(feeder)
+        .exec(
+          http(serviceScenario)
+            .get(requestUrl)
+            .header(RequestIdHeader, (s: Session) => getRequestId(s, "glt"))
+            .check(
+              status is 200,
+              jsonPath(jsonPathForId).is(expectedIdPattern)
+            )
+        )
+    }
 }
 
 

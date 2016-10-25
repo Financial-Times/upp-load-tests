@@ -63,10 +63,7 @@ object ReadSimulation {
 
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
-  val HttpConf = http
-    .baseURLs(System.getProperty("people-read-hosts").split(',').to[List])
-    .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
-    .userAgentHeader("People/Load-test")
+  val HttpConf = getDefaultHttpConf("People")
 
   val Scenario = scenario("People Read").during(Duration minutes) {
     feed(Feeder)
