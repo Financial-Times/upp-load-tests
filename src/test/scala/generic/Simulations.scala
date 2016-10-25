@@ -43,7 +43,6 @@ object ReadSimulation {
         )
     }
 
-
   def buildScenarioThatExists(feeder: FeederBuilder[_], serviceScenario: String, requestUrl: String, jsonPathForId: String) =
     scenario(serviceScenario).during(Duration minutes) {
       feed(feeder)
@@ -54,6 +53,19 @@ object ReadSimulation {
             .check(
               status is 200,
               jsonPath(jsonPathForId).exists
+            )
+        )
+    }
+
+  def buildScenarioThatExpectsOK(feeder: FeederBuilder[_], serviceScenario: String, requestUrl: String) =
+    scenario(serviceScenario).during(Duration minutes) {
+      feed(feeder)
+        .exec(
+          http(serviceScenario)
+            .get(requestUrl)
+            .header(RequestIdHeader, (s: Session) => getRequestId(s, "glt"))
+            .check(
+              status is 200
             )
         )
     }

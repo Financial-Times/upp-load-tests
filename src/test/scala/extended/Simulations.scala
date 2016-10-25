@@ -10,7 +10,7 @@ import scala.language.postfixOps
 class BigPeopleSimulations extends Simulation {
 
   val numReadUsers = DefaultNumUsers / 4
-  val ConcordancesSim = GenSim.buildScenarioThatExists(getDefaultFeeder("concordance/prod.concordances.uuid"), "Concordance Read Request", "/concordances${uuid}", "$.concordances")
+  val ConcordancesSim = GenSim.buildScenarioThatExpectsOK(getDefaultFeeder("concordance/prod.concordances.uuid"), "Concordance Read Request", "/concordances${uuid}")
   val BrandsSim = GenSim.buildScenario(getDefaultFeeder("brands/prod.brands.uuid"), "Brands Read Request", "/brands/${uuid}", "$.id", "http://api.ft.com/things/${uuid}")
   val httpConf = getDefaultHttpConf("BigPeople")
 
