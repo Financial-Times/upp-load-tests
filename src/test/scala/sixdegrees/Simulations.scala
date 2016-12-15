@@ -24,7 +24,7 @@ object ReadSimulation {
 
   val Feeder = Iterator.continually(
     Map(
-      "fromDate" -> DateTime.now().minusYears(1).plusMonths(Rnd().nextInt(11)).toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'")),
+      "fromDate" -> DateTime.now().minusYears(1).plusMonths(Rnd().nextInt(12)).toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'")),
       "toDate" -> DateTime.now().toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'"))
     )
   )
