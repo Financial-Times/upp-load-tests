@@ -22,15 +22,19 @@ object ReadSimulation {
     .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
     .userAgentHeader("Sixdegrees/Load-test")
 
-  val Feeder = Iterator.continually(Map("fromDate" -> DateTime.now().minusHours(3).plusMillis(Rnd().nextInt(1000))
-    .toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'"))))
+  val Feeder = Iterator.continually(
+    Map(
+      "fromDate" -> DateTime.now().minusYears(1).plusMonths(Rnd().nextInt(11)).toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'")),
+      "toDate" -> DateTime.now().toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'"))
+    )
+  )
 
   val Scenario = scenario("Notifications Read").during(Duration minutes) {
     feed(Feeder).
-      exec(http("Sixdegrees read request")
-        .get("/__public-six-degrees/sixdegrees/mostMentionedPeople?fromDate=${fromDate}")
-        .header(RequestIdHeader, (s: Session) => getRequestId(s, "nrlt"))
-        .check(status is 200))
+      exec(
+        http("Sixdegrees read request")
+          .get("/__public-six-degrees/sixdegrees/mostMentionedPeople?fromDate=${fromDate}&toDate=${toDate}")
+          .check(status is 200))
   }
 }
 
