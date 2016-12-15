@@ -1,7 +1,7 @@
 package sixdegrees
 
 /**
-  * This load test measures throughput of ??? hours worth of requests to the sixdegrees backend endpoints.
+  * This load test measures throughput, of given duration in minutes, worth of requests to the sixdegrees backend endpoints.
   *
   * USAGE example:
   * mvn clean gatling:execute -Dgatling.simulationClass=sixdegrees.ReadSimulation -Dusers=50 -Dramp-up-minutes=2 -Dsoak-duration-minutes=5
@@ -21,7 +21,7 @@ object ReadSimulation {
   val HttpConf = http
     .baseURLs(System.getProperty("sixdegrees-read-hosts").split(',').to[List])
     .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
-    .userAgentHeader("Sixdegrees/Load-test")
+    .userAgentHeader("Six-degrees/Load-test")
 
   val Feeder = Iterator.continually(
     Map(
@@ -30,11 +30,11 @@ object ReadSimulation {
     )
   )
 
-  val Scenario = scenario("Notifications Read").during(Duration minutes) {
+  val Scenario = scenario("Public six-degrees API Read").during(Duration minutes) {
     feed(Feeder).
       exec(
-        http("Sixdegrees read request")
-          .get("/__public-six-degrees/sixdegrees/mostMentionedPeople?fromDate=${fromDate}&toDate=${toDate}")
+        http("Public six-degrees read request")
+          .get("/sixdegrees/mostMentionedPeople?fromDate=${fromDate}&toDate=${toDate}")
           .check(status is 200))
   }
 }
