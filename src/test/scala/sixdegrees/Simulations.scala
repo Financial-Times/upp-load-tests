@@ -1,4 +1,4 @@
-package scala.sixdegrees
+package sixdegrees
 
 /**
   * This load test measures throughput of ??? hours worth of requests to the sixdegrees backend endpoints.
@@ -17,18 +17,16 @@ import scala.concurrent.forkjoin.ThreadLocalRandom.{current => Rnd}
 import scala.language.postfixOps
 
 object ReadSimulation {
+
   val HttpConf = http
     .baseURLs(System.getProperty("sixdegrees-read-hosts").split(',').to[List])
     .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
     .userAgentHeader("Sixdegrees/Load-test")
 
-  val NumberOfReadUsers = Integer.getInteger("users", DefaultNumUsers)
-  val RampUpMinutes = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
-
   val Feeder = Iterator.continually(
     Map(
-      "fromDate" -> DateTime.now().minusYears(1).plusMonths(Rnd().nextInt(12)).toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'")),
-      "toDate" -> DateTime.now().toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'"))
+      "fromDate" -> DateTime.now().minusYears(1).plusMonths(Rnd().nextInt(12)).toString(DateTimeFormat.forPattern("YYYY-MM-dd")),
+      "toDate" -> DateTime.now().toString(DateTimeFormat.forPattern("YYYY-MM-dd"))
     )
   )
 
@@ -42,13 +40,16 @@ object ReadSimulation {
 }
 
 class ReadSimulation extends Simulation {
+
   setUp(
-    ReadSimulation.Scenario.inject(rampUsers(ReadSimulation.NumberOfReadUsers) over (ReadSimulation.RampUpMinutes minutes))
+    ReadSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes))
   ).protocols(ReadSimulation.HttpConf)
+
 }
 
 class FullSimulation extends Simulation {
+
   setUp(
-    ReadSimulation.Scenario.inject(rampUsers(ReadSimulation.NumberOfReadUsers) over (ReadSimulation.RampUpMinutes minutes)).protocols(ReadSimulation.HttpConf)
+    ReadSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes)).protocols(ReadSimulation.HttpConf)
   )
 }
