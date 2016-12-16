@@ -59,11 +59,12 @@ If you want to run the tests from your IDE, then all you need to do is run the c
 ## Jenkins Jobs
 
 Enriched-content-api:
-*http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/enriched-content-api-load-test-ucs-gateway/
-*http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/enriched-content-api-load-test-coco/
-*http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/enriched-content-api-load-test-ucs/
+* http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/enriched-content-api-load-test-ucs-gateway/
+* http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/enriched-content-api-load-test-coco/
+* http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/enriched-content-api-load-test-ucs/
+
 Public-six-degrees-api:
-http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/six-degrees-load-test/
+* http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/six-degrees-load-test/
 
 ## Generate valid Uuids
 
