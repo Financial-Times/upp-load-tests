@@ -54,6 +54,7 @@ object WriteSimulation {
 object SpecialAnnotationUtils {
   val Orgs: Feeder[String] = csv("organisation/organisations.uuid").random.build
   val Ppl: Feeder[String] = csv("people/people.uuid").random.build
+  val Cnt: Feeder[String] = csv("content/methode.uuid").random.build
 
   def apply(): Feeder[String] = {
     Iterator.continually(
@@ -61,7 +62,8 @@ object SpecialAnnotationUtils {
         ("orgUuid", Orgs.next()("uuid")),
         ("organisation", "LoadTestOrganisation"),
         ("personUuid", Ppl.next()("uuid")),
-        ("person", "LoadTestPerson")
+        ("person", "LoadTestPerson"),
+        ("uuid", Cnt.next()("uuid"))
       )
     )
   }
