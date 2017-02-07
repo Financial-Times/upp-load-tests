@@ -15,10 +15,10 @@ class KillerLoadSimulation extends Simulation {
   val numWriteUsers = NumUsers.toInt / 10
 
   setUp(
-    EnrichedContentSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes)).protocols(EnrichedContentSimulation.HttpConf),
-    OrgReadSimulation.Scenario.inject(rampUsers(numReadUsers) over (RampUp minutes)).protocols(OrgReadSimulation.HttpConf),
-    SpecialWriteSimulation.Scenario.inject(rampUsers(numWriteUsers) over (RampUp minutes)).protocols(OrgReadSimulation.HttpConf),
-    PplReadSimulation.Scenario.inject(rampUsers(numReadUsers) over (RampUp minutes)).protocols(PplReadSimulation.HttpConf)
+    EnrichedContentSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes)).protocols(getDefaultHttpConf("killer")),
+    OrgReadSimulation.Scenario.inject(rampUsers(numReadUsers) over (RampUp minutes)).protocols(getDefaultHttpConf("killer")),
+    SpecialWriteSimulation.Scenario.inject(rampUsers(numWriteUsers) over (RampUp minutes)).protocols(getDefaultHttpConf("killer")),
+    PplReadSimulation.Scenario.inject(rampUsers(numReadUsers) over (RampUp minutes)).protocols(getDefaultHttpConf("killer"))
   )
 
 }
