@@ -4,11 +4,11 @@ import java.nio.charset.Charset
 import java.util.UUID
 
 import io.gatling.core.Predef._
+import io.gatling.core.feeder.{Feeder}
 import io.gatling.http.Predef._
 import utils.LoadTestDefaults._
 
 import scala.util.Random
-
 import scala.language.postfixOps
 
 object AnnotationUtils {
@@ -39,8 +39,8 @@ object WriteSimulation {
   val Scenario = scenario("Content Annotate").during(Duration minutes) {
     feed(Feeder)
       .uniformRandomSwitch(
-        exec { session => session.setAll(AnnotationUtils.getDataMap(session("uuid").as[String],session("person").as[String],session("organisation").as[String]))},
-        exec { session => session.setAll(AnnotationUtils.getDataMap(session("uuid").as[String],session("person").as[String],session("organisation").as[String]))}
+        exec { session => session.setAll(AnnotationUtils.getDataMap(session("uuid").as[String], session("person").as[String], session("organisation").as[String])) },
+        exec { session => session.setAll(AnnotationUtils.getDataMap(session("uuid").as[String], session("person").as[String], session("organisation").as[String])) }
       )
       .exec(
         http("Force Annotate request")
@@ -49,6 +49,41 @@ object WriteSimulation {
           .body(ELFileBody("annotator/suggestions_template.json"))
           .asJSON)
   }
+}
+
+object SpecialAnnotationUtils {
+  val Orgs: Feeder[String] = csv("organisation/organisations.uuid").random.build
+  val Ppl: Feeder[String] = csv("people/people.uuid").random.build
+
+  def apply(): Feeder[String] = {
+    Iterator.continually(
+      Map(
+        ("orgUuid", Orgs.next()("uuid")),
+        ("organisation", "LoadTestOrganisation"),
+        ("personUuid", Ppl.next()("uuid")),
+        ("person", "LoadTestPerson")
+      )
+    )
+  }
+}
+
+object SpecialWriteSimulation {
+  val Feeder = SpecialAnnotationUtils.apply()
+
+  val HttpConf = getDefaultHttpConf("ContentAnnotator")
+
+  val url = System.getProperty("content-annotator-hosts") + "/force-annotate"
+
+  val Scenario = scenario("Content Annotate").during(Duration minutes) {
+    feed(Feeder)
+      .exec(
+        http("Force Annotate request")
+          .post(url)
+          .header(RequestIdHeader, (s: Session) => getRequestId(s, "awlt"))
+          .body(ELFileBody("annotator/suggestions_template.json"))
+          .asJSON)
+  }
+
 }
 
 class WriteSimulation extends Simulation {
