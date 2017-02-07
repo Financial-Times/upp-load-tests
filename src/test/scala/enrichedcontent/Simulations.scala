@@ -12,10 +12,7 @@ object ReadSimulation {
 
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
-  val HttpConf = http
-    .baseURLs(System.getProperty("enriched-content-read-hosts").split(',').to[List])
-    .basicAuth(System.getProperty("username", "username"), System.getProperty("password", "password"))
-    .userAgentHeader("EnrichedContent/Load-test")
+  val HttpConf = getDefaultHttpConf("EnrichedContent")
     .header("x-api-key", System.getProperty("apiKey", "apiKey"))
 
   val Scenario = scenario("EnrichedContent Read").during(Duration minutes) {
