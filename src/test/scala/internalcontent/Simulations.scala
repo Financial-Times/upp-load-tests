@@ -5,7 +5,7 @@ package internalcontent
   *
   * USAGE example:
   * mvn clean gatling:execute -Dgatling.simulationClass=internalcontent.ReadSimulation -Dusers=50 -Dramp-up-minutes=2 -Dsoak-duration-minutes=5
-  * -Dhosts="https://pre-prod-up.ft.com" -DapiKey="theApiKey"
+  * -Dhosts="https://pre-prod-up.ft.com" -Dusername="pre-prod_User" -Dpassword="pre-prod_Ppass"
   */
 
 import io.gatling.core.Predef._
@@ -21,7 +21,6 @@ object ReadSimulation {
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
   val HttpConf = getDefaultHttpConf("InternalContent")
-    .header("x-api-key", System.getProperty("apiKey", "apiKey"))
 
   val Scenario = scenario("InternalContent Read").during(Duration minutes) {
     feed(Feeder)
