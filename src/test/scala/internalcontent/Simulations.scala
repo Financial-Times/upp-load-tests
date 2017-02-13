@@ -5,7 +5,7 @@ package internalcontent
   *
   * USAGE example:
   * mvn clean gatling:execute -Dgatling.simulationClass=internalcontent.ReadSimulation -Dusers=50 -Dramp-up-minutes=2 -Dsoak-duration-minutes=5
-  * -Dhosts="https://pre-prod-up.ft.com" -Dusername="pre-prod_User" -Dpassword="pre-prod_Ppass" -DapiKey="theApiKey"
+  * -Dhosts="https://pre-prod-up.ft.com" -DapiKey="theApiKey"
   */
 
 import io.gatling.core.Predef._
@@ -16,7 +16,7 @@ import scala.language.postfixOps
 
 object ReadSimulation {
 
-  val Feeder = csv("internalcontent/content.uuid." + System.getProperty("platform", "platform")).random
+  val Feeder = csv("internalcontent/content.uuid").random
 
   val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
 
