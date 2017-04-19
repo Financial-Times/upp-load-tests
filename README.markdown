@@ -53,6 +53,7 @@ The available simulations are:
 14. enrichedContent.ReadSimulation
 15. generic.ReadSimulation
 16. sixdegrees.ReadSimulation
+17. publicannotations.ReadSimulation
 
 If you want to run the tests from your IDE, then all you need to do is run the class Engine. This will create a prompt menu giving you the option to select a gatling test to run. Doing it this way will mean you run with all the default values (unless you run it with the JVM arguments to override them).
 
@@ -65,6 +66,9 @@ Enriched-content-api:
 
 Public-six-degrees-api:
 * http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/six-degrees-load-test/
+
+public-annotations-load-trst
+* http://ftjen10085-lvpr-uk-p:8181/view/API-load-test/job/public-annotations-api-load-test
 
 ## Generate valid Uuids
 
