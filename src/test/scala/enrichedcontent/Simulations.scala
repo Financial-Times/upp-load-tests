@@ -35,7 +35,7 @@ object StressSimulation {
 
   val Feeder = csv("enrichedcontent/content.uuid." + System.getProperty("platform", "platform")).random
 
-  val Duration = Integer.getInteger("duration-minutes", DefaultSoakDurationInMinutes)
+  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
   val StartingUsersPerSecond = Integer.getInteger("starting-users-per-sec", DefaultNumUsers).toDouble
   val PeekUsersPerSecond = Integer.getInteger("peek-users-per-sec", DefaultNumUsers).toDouble
 
