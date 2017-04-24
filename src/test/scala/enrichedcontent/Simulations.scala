@@ -31,7 +31,7 @@ object ReadSimulation {
   }
 }
 
-object PerformanceLimitSimulation {
+object StressSimulation {
 
   val Feeder = csv("enrichedcontent/content.uuid." + System.getProperty("platform", "platform")).random
 
@@ -76,12 +76,12 @@ class FullSimulation extends Simulation {
 
 }
 
-class PerformanceLimitSimulation extends Simulation {
+class StressSimulation extends Simulation {
   setUp(
-    PerformanceLimitSimulation.Scenario.inject(
-      rampUsersPerSec(PerformanceLimitSimulation.StartingUsersPerSecond)
-        to PerformanceLimitSimulation.PeekUsersPerSecond
-        during PerformanceLimitSimulation.Duration)
-      .protocols(PerformanceLimitSimulation.HttpConf)
+    StressSimulation.Scenario.inject(
+      rampUsersPerSec(StressSimulation.StartingUsersPerSecond)
+        to StressSimulation.PeekUsersPerSecond
+        during StressSimulation.Duration)
+      .protocols(StressSimulation.HttpConf)
   )
 }
