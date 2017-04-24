@@ -1,6 +1,9 @@
 package enrichedcontent
 
+import java.util.concurrent.atomic.AtomicBoolean
+
 import io.gatling.core.Predef._
+import io.gatling.core.result.message.KO
 import io.gatling.http.Predef._
 import utils.LoadTestDefaults._
 
@@ -15,6 +18,8 @@ object ReadSimulation {
   val HttpConf = getDefaultHttpConf("EnrichedContent")
     .header("x-api-key", System.getProperty("apiKey", "apiKey"))
 
+  val continue = new AtomicBoolean(true)
+
   val Scenario = scenario("EnrichedContent Read").during(Duration minutes) {
     feed(Feeder)
       .exec(
@@ -26,6 +31,34 @@ object ReadSimulation {
   }
 }
 
+object PerformanceLimitSimulation {
+
+  val Feeder = csv("enrichedcontent/content.uuid." + System.getProperty("platform", "platform")).random
+
+  val Duration = Integer.getInteger("duration-minutes", DefaultSoakDurationInMinutes)
+  val StartingUsersPerSecond = Integer.getInteger("starting-users-per-sec", DefaultNumUsers).toDouble
+  val PeekUsersPerSecond = Integer.getInteger("peek-users-per-sec", DefaultNumUsers).toDouble
+
+  val HttpConf = getDefaultHttpConf("EnrichedContent")
+
+  val continue = new AtomicBoolean(true)
+
+  val Scenario = scenario("EnrichedContent Read").exec(
+    doIf(session => continue.get) {
+    feed(Feeder)
+      .exec(
+        http("EnrichedContent Read request")
+          .get("/enrichedcontent/${uuid}")
+          .header(RequestIdHeader, (s: Session) => getRequestId(s, "eclt"))
+          .check(status.is(200) or status.is(404))
+      )
+      .exec((s: Session) => {
+        if (s.status == KO) {
+          continue.set(false)
+        }
+      })
+  }
+}
 
 class ReadSimulation extends Simulation {
 
@@ -41,4 +74,14 @@ class FullSimulation extends Simulation {
     ReadSimulation.Scenario.inject(rampUsers(NumUsers) over (RampUp minutes)).protocols(ReadSimulation.HttpConf)
   )
 
+}
+
+class PerformanceLimitSimulation extends Simulation {
+  setUp(
+    PerformanceLimitSimulation.Scenario.inject(
+      rampUsersPerSec(PerformanceLimitSimulation.StartingUsersPerSecond)
+        to PerformanceLimitSimulation.PeekUsersPerSecond
+        during PerformanceLimitSimulation.Duration)
+      .protocols(PerformanceLimitSimulation.HttpConf)
+  )
 }
