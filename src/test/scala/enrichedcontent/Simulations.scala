@@ -40,6 +40,7 @@ object StressSimulation {
   val PeekUsersPerSecond = Integer.getInteger("peek-users-per-sec", DefaultNumUsers).toDouble
 
   val HttpConf = getDefaultHttpConf("EnrichedContent")
+    .header("x-policy", "INTERNAL_UNSTABLE,RICH_CONTENT")
 
   val continue = new AtomicBoolean(true)
 
