@@ -35,7 +35,7 @@ object StressSimulation {
 
   val Feeder = csv("enrichedcontent/content.uuid." + System.getProperty("platform", "platform")).random
 
-  val Duration = Integer.getInteger("soak-duration-minutes", DefaultSoakDurationInMinutes)
+  val Duration = Integer.getInteger("duration-seconds", DefaultSoakDurationInSeconds)
   val StartingUsersPerSecond = Integer.getInteger("starting-users-per-sec", DefaultNumUsers).toDouble
   val PeekUsersPerSecond = Integer.getInteger("peek-users-per-sec", DefaultNumUsers).toDouble
 
@@ -50,15 +50,15 @@ object StressSimulation {
       .exec(
         http("EnrichedContent Read request")
           .get("/enrichedcontent/${uuid}")
-          .header(RequestIdHeader, (s: Session) => getRequestId(s, "eclt"))
-          .check(status.is(200) or status.is(404))
+          .check(status.in(200, 404))
       )
-      .exec((s: Session) => {
-        if (s.status == KO) {
+      .exec((session: Session) => {
+        if (session.status == KO) {
           continue.set(false)
         }
+        session
       })
-  }
+  })
 }
 
 class ReadSimulation extends Simulation {
