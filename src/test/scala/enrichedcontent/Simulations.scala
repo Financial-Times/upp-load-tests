@@ -31,7 +31,7 @@ object ReadSimulation {
   }
 }
 
-object StressSimulation {
+object StressLimitSimulation {
 
   val Feeder = csv("enrichedcontent/content.uuid." + System.getProperty("platform", "platform")).random
 
@@ -46,19 +46,19 @@ object StressSimulation {
 
   val Scenario = scenario("EnrichedContent Read").exec(
     doIf(session => continue.get) {
-    feed(Feeder)
-      .exec(
-        http("EnrichedContent Read request")
-          .get("/enrichedcontent/${uuid}")
-          .check(status.in(200, 404))
-      )
-      .exec((session: Session) => {
-        if (session.status == KO) {
-          continue.set(false)
-        }
-        session
-      })
-  })
+      feed(Feeder)
+        .exec(
+          http("EnrichedContent Read request")
+            .get("/enrichedcontent/${uuid}")
+            .check(status.in(200, 404))
+        )
+        .exec((session: Session) => {
+          if (session.status == KO) {
+            continue.set(false)
+          }
+          session
+        })
+    })
 }
 
 class ReadSimulation extends Simulation {
@@ -77,12 +77,17 @@ class FullSimulation extends Simulation {
 
 }
 
-class StressSimulation extends Simulation {
+/*
+// Stress limit test running example:
+// mvn clean gatling:execute -Dgatling.simulationClass=enrichedcontent.StressLimitSimulation -Dduration-seconds=60 -Dstarting-users-per-sec=100 -Dpeek-users-per-sec=1000
+// -Dhosts="https://pre-prod-up.ft.com" -Dusername="pre-prod" -Dpassword="pre-prod-password" -Dplatform=coco
+*/
+class StressLimitSimulation extends Simulation {
   setUp(
-    StressSimulation.Scenario.inject(
-      rampUsersPerSec(StressSimulation.StartingUsersPerSecond)
-        to StressSimulation.PeekUsersPerSecond
-        during StressSimulation.Duration)
-      .protocols(StressSimulation.HttpConf)
+    StressLimitSimulation.Scenario.inject(
+      rampUsersPerSec(StressLimitSimulation.StartingUsersPerSecond)
+        to StressLimitSimulation.PeekUsersPerSecond
+        during StressLimitSimulation.Duration)
+      .protocols(StressLimitSimulation.HttpConf)
   )
 }
