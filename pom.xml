@@ -163,8 +163,8 @@
                 </executions>
                 <configuration>
                     <jvmArgs>
-                        <jvmArg>-Xms1g</jvmArg>
-                        <jvmArg>-Xmx1g</jvmArg>
+                        <jvmArg>-Xms512m</jvmArg>
+                        <jvmArg>-Xmx512m</jvmArg>
                         <jvmArg>-XX:+UseG1GC</jvmArg>
                         <jvmArg>-server</jvmArg>
                     </jvmArgs>
