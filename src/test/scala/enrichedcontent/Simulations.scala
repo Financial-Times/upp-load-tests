@@ -59,15 +59,15 @@ class FullSimulation extends Simulation {
 // the error responses keep coming constantly in a short time.
 //
 // Example of running it from the command line:
-// mvn clean gatling:execute -Dgatling.simulationClass=enrichedcontent.StressLimitSimulation -Dduration-seconds=60 -Dstarting-users-per-sec=100 -Dpeek-users-per-sec=1000
-// -Dhosts="https://pre-prod-up.ft.com" -Dusername="pre-prod" -Dpassword="pre-prod-password" -Dplatform=coco
+// mvn clean gatling:execute -Dgatling.simulationClass=enrichedcontent.StressLimitSimulation -Dduration-seconds=60 -Dstarting-req-per-sec=100 -Dpeek-req-per-sec=1000
+// -Dhosts="https://pre-prod-up.ft.com" -Dusername="pre-prod" -Dpassword="pre-prod-password"
 */
 object StressLimitSimulation {
-  val Feeder = csv("enrichedcontent/content.uuid." + System.getProperty("platform", "platform")).random
+  val Feeder = csv("enrichedcontent/content.uuid.coco").random
 
   val Duration = Integer.getInteger("duration-seconds", DefaultSoakDurationInSeconds)
-  val StartingUsersPerSecond = Integer.getInteger("starting-users-per-sec", DefaultNumUsers).toDouble
-  val PeekUsersPerSecond = Integer.getInteger("peek-users-per-sec", DefaultNumUsers).toDouble
+  val StartingReqPerSecond = Integer.getInteger("starting-req-per-sec", DefaultStartingReqPerSec).toDouble
+  val PeekReqPerSecond = Integer.getInteger("peek-req-per-sec", DefaultPeekReqPerSec).toDouble
 
   val HttpConf = getDefaultHttpConf("EnrichedContent")
     .header("x-policy", "INTERNAL_UNSTABLE,RICH_CONTENT")
@@ -94,8 +94,8 @@ object StressLimitSimulation {
 class StressLimitSimulation extends Simulation {
   setUp(
     StressLimitSimulation.Scenario.inject(
-      rampUsersPerSec(StressLimitSimulation.StartingUsersPerSecond)
-        to StressLimitSimulation.PeekUsersPerSecond
+      rampUsersPerSec(StressLimitSimulation.StartingReqPerSecond)
+        to StressLimitSimulation.PeekReqPerSecond
         during StressLimitSimulation.Duration)
       .protocols(StressLimitSimulation.HttpConf)
   )
