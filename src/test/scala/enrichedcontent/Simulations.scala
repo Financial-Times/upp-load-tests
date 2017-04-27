@@ -18,8 +18,6 @@ object ReadSimulation {
   val HttpConf = getDefaultHttpConf("EnrichedContent")
     .header("x-api-key", System.getProperty("apiKey", "apiKey"))
 
-  val continue = new AtomicBoolean(true)
-
   val Scenario = scenario("EnrichedContent Read").during(Duration minutes) {
     feed(Feeder)
       .exec(
