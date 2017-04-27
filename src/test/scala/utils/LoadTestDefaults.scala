@@ -9,8 +9,11 @@ import io.gatling.http.Predef._
 object LoadTestDefaults {
 
   val DefaultSoakDurationInMinutes = 5
+  val DefaultSoakDurationInSeconds = 300
   val DefaultRampUpDurationInMinutes = 1
   val DefaultNumUsers = 10
+  val DefaultStartingReqPerSec = 10
+  val DefaultPeekReqPerSec = 500
   val RequestIdHeader = "X-Request-Id"
   val NumUsers = Integer.getInteger("users", DefaultNumUsers)
   val RampUp = Integer.getInteger("ramp-up-minutes", DefaultRampUpDurationInMinutes)
