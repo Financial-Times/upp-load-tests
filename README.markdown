@@ -2,7 +2,7 @@
 
 ## What is this project about?
 
-This is a simple Maven project to produce predictable load on our API microservices, like organisation read and write API.
+This is a simple Maven project to produce predictable load on our API's micro-services.
 
 ## Motivation
 
